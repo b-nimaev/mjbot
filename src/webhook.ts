@@ -16,7 +16,9 @@ const fetchData = async () => {
 };
 
 async function set_webhook () {
+    console.log(`${process.env.mode?.replace(/"/g, '')}`)
     if (`${process.env.mode?.replace(/"/g, '')}` === "production") {
+        console.log(`${process.env.mode?.replace(/"/g, '')}`)
         // @ts-ignore
         bot.telegram.setWebhook(`${process.env.WEBHOOK_URL.replace(/"/g, '') }/bot123`).then(() => {
             console.log('webhook setted');

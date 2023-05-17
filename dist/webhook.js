@@ -47,10 +47,13 @@ const fetchData = () => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 function set_webhook() {
-    var _a;
+    var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
-        if (`${(_a = process.env.mode) === null || _a === void 0 ? void 0 : _a.replace(/"/g, '')}` === "production") {
-            _1.bot.telegram.setWebhook(`${process.env.WEBHOOK_URL}/bot123`).then(() => {
+        console.log(`${(_a = process.env.mode) === null || _a === void 0 ? void 0 : _a.replace(/"/g, '')}`);
+        if (`${(_b = process.env.mode) === null || _b === void 0 ? void 0 : _b.replace(/"/g, '')}` === "production") {
+            console.log(`${(_c = process.env.mode) === null || _c === void 0 ? void 0 : _c.replace(/"/g, '')}`);
+            // @ts-ignore
+            _1.bot.telegram.setWebhook(`${process.env.WEBHOOK_URL.replace(/"/g, '')}/bot123`).then(() => {
                 console.log('webhook setted');
             });
         }
