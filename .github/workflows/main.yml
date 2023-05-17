@@ -16,12 +16,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Stop port 5000
-        run: |
-          #!/bin/bash
-          kill $(lsof -t -i :5000)
-        shell: bash
-
       - name: Update code on server
         uses: appleboy/ssh-action@master
         with:
@@ -29,7 +23,9 @@ jobs:
           username: ${{ secrets.REMOTE_USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
+            lsof -i :5000 | awk 'NR!=1 {print $2}' | xargs kill -9
             cd /opt/burlive
             git pull
             npx tsc -p tsconfig.json
             node dist/index.js &
+
