@@ -41,6 +41,10 @@ async function moderation_sentences_handler(ctx: rlhubContext) {
 
             ctx.answerCbQuery()
 
+        } else {
+
+            await moderation_sentences(ctx)
+            
         }
 
     } catch (err) {
@@ -72,6 +76,7 @@ async function moderation_translates_handler(ctx: rlhubContext) {
                 await Translation.findOneAndUpdate({ _id: translate_id }, { $push: { votes: vote_id } })
                 await User.findOneAndUpdate({ _id: user?._id }, { $addToSet: { voted_translations: translate_id } })
             })
+            
             await render_vote_sentence(ctx)
 
         } else if (data === 'bad') {
@@ -86,6 +91,7 @@ async function moderation_translates_handler(ctx: rlhubContext) {
                 await Translation.findOneAndUpdate({ _id: translate_id }, { $push: { votes: vote_id } })
                 await User.findOneAndUpdate({ _id: user?._id }, { $addToSet: { voted_translations: translate_id } })
             })
+
             await render_vote_sentence(ctx)
 
         }

@@ -51,7 +51,7 @@ export async function render_vote_sentence(ctx: rlhubContext) {
         message += `Предложение на русском языке <pre>${sentence_russian?.text}</pre> \n`
         // message += `Количество переводов: ${sentence_russian?.translations.length}\n\n`
         message += `Проголосуйте за следующий перевод \n`
-        message += `<pre>${translation?.translate_text}</pre>`
+        message += `<pre>${translation?.translate_text}</pre>\n\n`
         let statistic = {
             plus: <any>[],
             minus: <any>[]

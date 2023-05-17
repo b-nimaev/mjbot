@@ -24,13 +24,14 @@ export default async function greeting(ctx: rlhubContext) {
                                 }
                             ], [
                                 {
-                                    text: 'Настройки',
-                                    callback_data: 'common_settings'
-                                }
-                            ], [
-                                {
                                     text: 'Поддержка проекта',
                                     callback_data: 'help'
+                                }
+                            ],
+                            [
+                                {
+                                    text: 'Персональные данные',
+                                    callback_data: 'common_settings'
                                 }
                             ],
                             [

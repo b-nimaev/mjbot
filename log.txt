@@ -1,0 +1,4 @@
+User 1272270574 removed active translator by back 6464b3dad06caf71d806065e from sentence 6460cd14a2ec02e37197972a at 2023-05-17T11:00:45.527Z
+User 1272270574 removed active translator by back 6464c079a093b7e1ead7ff1f from sentence 6460cd14a2ec02e37197972a at 2023-05-17T11:54:37.519Z
+Активный переводчик 6464c079a093b7e1ead7ff1f удален из предложения 6460cd14a2ec02e37197972a at 2023-05-17T11:44:17.784Z
+Документ активного переводчика 6464c079a093b7e1ead7ff1f удален

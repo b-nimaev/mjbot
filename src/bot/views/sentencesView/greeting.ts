@@ -14,14 +14,13 @@ export default async function greeting(ctx: rlhubContext) {
                 inline_keyboard: [
                     [
                         {
-                            text: 'Добавить перевод',
-                            callback_data: 'translate_sentences'
-                        }
-                    ],
-                    [
-                        {
                             text: 'Добавить предложения',
                             callback_data: 'add_sentence'
+                        }
+                    ], [
+                        {
+                            text: 'Добавить перевод',
+                            callback_data: 'translate_sentences'
                         }
                     ], [
                         {
@@ -47,7 +46,8 @@ export default async function greeting(ctx: rlhubContext) {
 
         let message = `<b>Перевод предложений 🚀</b> \n\n`
         message += `Наша цель собрать 100 000 корректных переводов предложений из разных сфер жизни, для создания машинного-бурятского языка\n\n`
-        message += `А Чтобы переводить предложения, нужны сами предложения на <b>русском языке</b>. \n\nДо конца цели осталось <b>${formatMoney(left)} переводов</b>`
+        // message += `А Чтобы переводить предложения, нужны сами предложения на <b>русском языке</b>.` 
+        message += `До конца цели осталось <b>${formatMoney(left)} переводов</b>`
 
         ctx.updateType === 'message' ? await ctx.reply(message, extra) : false
         ctx.updateType === 'callback_query' ? await ctx.editMessageText(message, extra) : false
