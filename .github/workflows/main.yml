@@ -16,6 +16,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Stop port 5000
+        run: |
+          #!/bin/bash
+          kill $(lsof -t -i :5000)
+        shell: bash
+
       - name: Update code on server
         uses: appleboy/ssh-action@master
         with:
@@ -27,5 +33,4 @@ jobs:
             cd /opt/burlive
             git pull
             npx tsc -p tsconfig.json
-            node dist/index.js
-
+            nohup node dist/index.js > /dev/null 2>&1 & disown
