@@ -12,7 +12,7 @@ const PORT = process.env.PORT;
 
 
 const app = express();
-export const secretPath = `/telegraf/${bot.secretPathComponent()}`;
+export const secretPath = `/telegraf/secret_path`;
 app.use(bodyParser.json());
 
 
@@ -23,24 +23,6 @@ console.log(process.env.mode?.replace(/"/g, ''))
 console.log(process.env.mode?.replace(/"/g, '') === 'production')
 console.log(typeof (process.env.mode?.replace(/"/g, '')))
 
-// if (process.env.mode?.replace(/"/g, '') === 'production') {
-//     const privateKey = fs.readFileSync('/app/ssl/privkey.pem', 'utf8');
-//     const certificate = fs.readFileSync('/app/ssl/fullchain.pem', 'utf8');
-
-//     const credentials = {
-//         key: privateKey,
-//         cert: certificate,
-//     };
-
-//     const server = https.createServer(credentials, app);
-
-//     server.listen(PORT, () => {
-//         console.log(`Server listening on port ${PORT}`)
-//     })
-
-// } else {
-//     // Start the server and listen on the specified port
-// }
 
 app.get("/", (req, res) => res.send("Бот запущен!"))
 

@@ -42,7 +42,7 @@ const fetchData = () => __awaiter(void 0, void 0, void 0, function* () {
     //@ts-ignore
     const secureTunnel = json.tunnels[0].public_url;
     console.log(secureTunnel);
-    yield _1.bot.telegram.setWebhook(`${secureTunnel}/bot123`)
+    yield _1.bot.telegram.setWebhook(`${secureTunnel}${app_1.secretPath}`)
         .then(res => {
         console.log(res);
     });
