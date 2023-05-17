@@ -25,8 +25,8 @@ console.log(process.env.mode?.replace(/"/g, '') === 'production')
 console.log(typeof (process.env.mode?.replace(/"/g, '')))
 
 if (process.env.mode?.replace(/"/g, '') === 'production') {
-    const privateKey = fs.readFileSync('/app/ssl/privkey.pem', 'utf8');
-    const certificate = fs.readFileSync('/app/ssl/fullchain.pem', 'utf8');
+    const privateKey = fs.readFileSync('./ssl/privkey.pem', 'utf8');
+    const certificate = fs.readFileSync('./ssl/fullchain.pem', 'utf8');
 
     const credentials = {
         key: privateKey,
@@ -45,6 +45,10 @@ if (process.env.mode?.replace(/"/g, '') === 'production') {
         console.log(`Server running on port ${PORT}`);
     });
 }
+
+app.get('/', async (req, res) => {
+    res.send('bot is working!')
+})
 
 // Handle GET request to '/success'
 app.get('/success', async (req, res) => {

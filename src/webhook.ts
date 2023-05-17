@@ -19,7 +19,6 @@ async function set_webhook () {
     console.log(`${process.env.mode?.replace(/"/g, '')}`)
     if (`${process.env.mode?.replace(/"/g, '')}` === "production") {
         console.log(`${process.env.mode?.replace(/"/g, '')}`)
-        // @ts-ignore
         await bot.telegram.setWebhook(`https://profori.pro/bot123`).then(() => {
             console.log('webhook setted');
         }).catch(err => {
