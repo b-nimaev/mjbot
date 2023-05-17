@@ -20,6 +20,7 @@ async function set_webhook () {
     console.log(`${process.env.mode?.replace(/"/g, '')}`)
     if (`${process.env.mode?.replace(/"/g, '')}` === "production") {
         console.log(`${process.env.mode?.replace(/"/g, '')}`)
+        console.log(`secret path: ${secretPath}`)
         await bot.telegram.setWebhook(`https://profori.pro${secretPath}`).then((status) => {
             console.log(secretPath);
             console.log(status);
