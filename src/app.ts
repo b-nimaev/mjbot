@@ -18,7 +18,6 @@ app.use(bodyParser.json());
 
 // Handle POST request to '/bot'
 app.post(`/telegraf/secret_path`, (req, res) => {
-    console.log(res)
     bot.handleUpdate(req.body, res);
 });
 

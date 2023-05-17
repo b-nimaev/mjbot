@@ -45,8 +45,6 @@ home.start(async (ctx: rlhubContext) => {
             id: ctx.from?.id
         })
 
-        console.log(document)
-
         if (!document) {
 
             if (ctx.from) {
@@ -62,7 +60,9 @@ home.start(async (ctx: rlhubContext) => {
                     proposedProposals: [],
                     supported: 0
                 }
-                await new User(user).save()
+                await new User(user).save().catch(err => {
+                    console.log(err)
+                })
                 await greeting(ctx)
             }
 
