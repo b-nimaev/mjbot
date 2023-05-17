@@ -17,7 +17,9 @@ app.use(bodyParser.json());
 
 
 // Handle POST request to '/bot'
-app.use(bot.webhookCallback(secretPath))
+app.post(`/telegraf/secret_path`, (req, res) => {
+    bot.handleUpdate(req.body, res);
+});
 
 console.log(process.env.mode?.replace(/"/g, ''))
 console.log(process.env.mode?.replace(/"/g, '') === 'production')
