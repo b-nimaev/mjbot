@@ -20,7 +20,7 @@ export default async function greeting(ctx: rlhubContext) {
                     ],
                     [
                         {
-                            text: 'Предложения',
+                            text: 'Добавить предложения',
                             callback_data: 'add_sentence'
                         }
                     ], [

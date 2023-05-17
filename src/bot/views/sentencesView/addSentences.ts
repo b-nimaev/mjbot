@@ -7,7 +7,10 @@ export default async function add_sentences(ctx: rlhubContext) {
     ctx.answerCbQuery()
     ctx.wizard.selectStep(2)
     let message = `<b>Добавление перевода — Предложения</b>\n\n`
-    message += `Отправьте список предложений на русском которые хотите добавить в базу данных для их перевода в дальнейшем`
+    message += `Отправьте предложение на русском языке, которое <b>мы все вместе</b> переведем \n\n`
+    message += `<code>Можно загружать сразу несколько предложений, с разделением %%</code> \n\n`
+    message += `например \n`
+    message += `<code>Предложение 1 %% Предложение 2 %% Предложение 3 ...</code>`
     await ctx.editMessageText(message, {
         parse_mode: 'HTML', reply_markup: {
             inline_keyboard: [
@@ -97,8 +100,8 @@ async function add_sentences_handler(ctx: rlhubContext) {
 
                     let message: string = ``
 
-                    if (sentence.text.indexOf('+;') !== -1) {
-                        let splitted = sentence.text.split('+;')
+                    if (sentence.text.indexOf('%%') !== -1) {
+                        let splitted = sentence.text.split('%%')
                         let arr: string[] = []
                         for (let i = 0; i < splitted.length; i++) {
                             arr.push(splitted[i].trimEnd().trimStart())
@@ -126,7 +129,7 @@ async function add_sentences_handler(ctx: rlhubContext) {
                                 ],
                                 [
                                     {
-                                        text: 'Назад',
+                                        text: 'Отмена',
                                         callback_data: 'back'
                                     }
                                 ]
