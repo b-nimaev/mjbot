@@ -18,6 +18,8 @@ const IUser_1 = require("./models/IUser");
 const IPayment_1 = require("./models/IPayment");
 const mongodb_1 = require("mongodb");
 const index_1 = require("./index");
+const fs_1 = __importDefault(require("fs"));
+const https_1 = __importDefault(require("https"));
 const PORT = process.env.PORT;
 const app = (0, express_1.default)();
 app.use(body_parser_1.default.json());
@@ -26,10 +28,24 @@ app.post(`/bot123`, (req, res) => {
     console.log(res);
     index_1.bot.handleUpdate(req.body, res);
 });
-// Start the server and listen on the specified port
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+if (process.env.mode === 'production') {
+    const privateKey = fs_1.default.readFileSync('/app/ssl/privkey.pem', 'utf8');
+    const certificate = fs_1.default.readFileSync('/app/ssl/fullchain.pem', 'utf8');
+    const credentials = {
+        key: privateKey,
+        cert: certificate,
+    };
+    const server = https_1.default.createServer(credentials, app);
+    server.listen(PORT, () => {
+        console.log(`Server listening on port ${PORT}`);
+    });
+}
+else {
+    // Start the server and listen on the specified port
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+}
 // Handle GET request to '/success'
 app.get('/success', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     // Extract the billId from the request URL

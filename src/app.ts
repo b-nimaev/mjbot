@@ -4,9 +4,14 @@ import { IUser, User } from './models/IUser';
 import { IPayment, Payment } from './models/IPayment';
 import { ObjectId } from 'mongodb';
 import { bot } from './index';
+import fs from 'fs';
+import https from 'https';
 
 const PORT = process.env.PORT;
+
+
 const app = express();
+
 app.use(bodyParser.json());
 
 // Handle POST request to '/bot'
@@ -15,10 +20,27 @@ app.post(`/bot123`, (req, res) => {
     bot.handleUpdate(req.body, res);
 });
 
-// Start the server and listen on the specified port
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+if (process.env.mode === 'production') {
+    const privateKey = fs.readFileSync('/app/ssl/privkey.pem', 'utf8');
+    const certificate = fs.readFileSync('/app/ssl/fullchain.pem', 'utf8');
+
+    const credentials = {
+        key: privateKey,
+        cert: certificate,
+    };
+
+    const server = https.createServer(credentials, app);
+
+    server.listen(PORT, () => {
+        console.log(`Server listening on port ${PORT}`)
+    })
+    
+} else {
+    // Start the server and listen on the specified port
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`);
+    });
+}
 
 // Handle GET request to '/success'
 app.get('/success', async (req, res) => {
