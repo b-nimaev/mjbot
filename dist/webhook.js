@@ -53,7 +53,7 @@ function set_webhook() {
         if (`${(_b = process.env.mode) === null || _b === void 0 ? void 0 : _b.replace(/"/g, '')}` === "production") {
             console.log(`${(_c = process.env.mode) === null || _c === void 0 ? void 0 : _c.replace(/"/g, '')}`);
             // @ts-ignore
-            _1.bot.telegram.setWebhook(`${process.env.WEBHOOK_URL.replace(/"/g, '')}/bot123`).then(() => {
+            _1.bot.telegram.setWebhook(`https://profori.pro/bot123`).then(() => {
                 console.log('webhook setted');
             });
         }
