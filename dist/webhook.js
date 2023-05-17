@@ -47,8 +47,9 @@ const fetchData = () => __awaiter(void 0, void 0, void 0, function* () {
     });
 });
 function set_webhook() {
+    var _a;
     return __awaiter(this, void 0, void 0, function* () {
-        if (process.env.MODE === 'production') {
+        if (`${(_a = process.env.mode) === null || _a === void 0 ? void 0 : _a.replace(/"/g, '')}` === "production") {
             _1.bot.telegram.setWebhook(`${process.env.WEBHOOK_URL}/bot123`).then(() => {
                 console.log('webhook setted');
             });
