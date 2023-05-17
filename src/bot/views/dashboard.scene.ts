@@ -22,6 +22,7 @@ async function about_project (ctx: rlhubContext) {
     try {
 
         if (ctx.updateType === 'callback_query') {
+            
             if (ctx.callbackQuery) {
 
                 // @ts-ignore
@@ -41,8 +42,11 @@ async function about_project (ctx: rlhubContext) {
                 }
 
             }
+            
         } else {
+
             about_project_section_render (ctx)
+
         }
 
     } catch (err) {
@@ -58,7 +62,12 @@ dashboard.action("about", async (ctx) => await about_project_section_render (ctx
 async function about_project_section_render (ctx: rlhubContext) {
     try {
         
-        let message: string = '<b>Личный кабинет — О проекте</b> \n\nНаш проект нацелен на развитие бурятского языка, который является важной частью культурного наследия Бурятии. \n\nМы стремимся сохранить и продвигать язык среди молодого поколения, создавая образовательные материалы и организуя языковые мероприятия. \n\nНаша цель - сохранить богатство бурятской культуры и ее языка для будущих поколений.'
+        let message: string = `<b>Личный кабинет — О проекте</b> \n\n`
+        message += `Наш проект нацелен на развитие бурятского языка, который является важной частью культурного наследия Бурятии. \n\n`
+        message += `Мы стремимся сохранить и продвигать язык среди молодого поколения, создавая образовательные материалы и организуя языковые мероприятия. \n\n`
+        message += `Наша цель - сохранить богатство бурятской культуры и ее языка для будущих поколений, и отчасти, для нынешнего. \n\n`
+        message += `Контактное лицо: @frntdev`
+        
         let extra: ExtraEditMessageText = {
             parse_mode: 'HTML',
             reply_markup: {

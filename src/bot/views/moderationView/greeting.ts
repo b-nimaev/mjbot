@@ -6,6 +6,9 @@ export default async function greeting(ctx: rlhubContext) {
     try {
 
         let message: string = `<b>Модерация</b>\n\n`
+
+        message += `Здесь необходимо голосовать за качества переводов предложений и самих предложений`
+
         message += `Выберите раздел чтобы приступить`
 
         const extra: ExtraEditMessageText = {
