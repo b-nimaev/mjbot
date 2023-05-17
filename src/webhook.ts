@@ -1,4 +1,5 @@
 import { bot } from ".";
+import { secretPath } from "./app";
 
 const fetchData = async () => {
     const { default: fetch } = await import('node-fetch');
@@ -9,7 +10,7 @@ const fetchData = async () => {
     //@ts-ignore
     const secureTunnel = json.tunnels[0].public_url
     console.log(secureTunnel)
-    await bot.telegram.setWebhook(`${secureTunnel}/bot123`)
+    await bot.telegram.setWebhook(`${secureTunnel}${secretPath}`)
         .then(res => {
             console.log(res)
         })
@@ -19,8 +20,9 @@ async function set_webhook () {
     console.log(`${process.env.mode?.replace(/"/g, '')}`)
     if (`${process.env.mode?.replace(/"/g, '')}` === "production") {
         console.log(`${process.env.mode?.replace(/"/g, '')}`)
-        await bot.telegram.setWebhook(`https://profori.pro/bot123`).then(() => {
-            console.log('webhook setted');
+        await bot.telegram.setWebhook(`https://profori.pro${secretPath}`).then((status) => {
+            console.log(secretPath);
+            console.log(status);
         }).catch(err => {
             console.log(err)
         })

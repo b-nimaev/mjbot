@@ -33,6 +33,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const _1 = require(".");
+const app_1 = require("./app");
 const fetchData = () => __awaiter(void 0, void 0, void 0, function* () {
     const { default: fetch } = yield Promise.resolve().then(() => __importStar(require('node-fetch')));
     const res = yield fetch('http://localhost:4040/api/tunnels');
@@ -52,9 +53,9 @@ function set_webhook() {
         console.log(`${(_a = process.env.mode) === null || _a === void 0 ? void 0 : _a.replace(/"/g, '')}`);
         if (`${(_b = process.env.mode) === null || _b === void 0 ? void 0 : _b.replace(/"/g, '')}` === "production") {
             console.log(`${(_c = process.env.mode) === null || _c === void 0 ? void 0 : _c.replace(/"/g, '')}`);
-            // @ts-ignore
-            yield _1.bot.telegram.setWebhook(`https://profori.pro/bot123/`).then(() => {
-                console.log('webhook setted');
+            yield _1.bot.telegram.setWebhook(`https://profori.pro${app_1.secretPath}`).then((status) => {
+                console.log(app_1.secretPath);
+                console.log(status);
             }).catch(err => {
                 console.log(err);
             });

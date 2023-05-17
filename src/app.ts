@@ -6,49 +6,43 @@ import { ObjectId } from 'mongodb';
 import { bot } from './index';
 import fs from 'fs';
 import https from 'https';
-
+import cors from 'cors';
+const morgan = require("morgan")
 const PORT = process.env.PORT;
 
 
 const app = express();
-
+export const secretPath = `/telegraf/${bot.secretPathComponent()}`;
 app.use(bodyParser.json());
 
+
 // Handle POST request to '/bot'
-app.post(`/bot123`, (req, res) => {
-    console.log(res)
-    bot.handleUpdate(req.body, res);
-});
+app.use(bot.webhookCallback(secretPath))
 
 console.log(process.env.mode?.replace(/"/g, ''))
 console.log(process.env.mode?.replace(/"/g, '') === 'production')
 console.log(typeof (process.env.mode?.replace(/"/g, '')))
 
-if (process.env.mode?.replace(/"/g, '') === 'production') {
-    const privateKey = fs.readFileSync('/app/ssl/privkey.pem', 'utf8');
-    const certificate = fs.readFileSync('/app/ssl/fullchain.pem', 'utf8');
+// if (process.env.mode?.replace(/"/g, '') === 'production') {
+//     const privateKey = fs.readFileSync('/app/ssl/privkey.pem', 'utf8');
+//     const certificate = fs.readFileSync('/app/ssl/fullchain.pem', 'utf8');
 
-    const credentials = {
-        key: privateKey,
-        cert: certificate,
-    };
+//     const credentials = {
+//         key: privateKey,
+//         cert: certificate,
+//     };
 
-    const server = https.createServer(credentials, app);
+//     const server = https.createServer(credentials, app);
 
-    server.listen(PORT, () => {
-        console.log(`Server listening on port ${PORT}`)
-    })
+//     server.listen(PORT, () => {
+//         console.log(`Server listening on port ${PORT}`)
+//     })
 
-} else {
-    // Start the server and listen on the specified port
-    app.listen(PORT, () => {
-        console.log(`Server running on port ${PORT}`);
-    });
-}
+// } else {
+//     // Start the server and listen on the specified port
+// }
 
-app.get('/', async (req, res) => {
-    res.send('bot is working!')
-})
+app.get("/", (req, res) => res.send("Бот запущен!"))
 
 // Handle GET request to '/success'
 app.get('/success', async (req, res) => {
@@ -104,4 +98,9 @@ app.get('/payment/success', async (req, res) => {
 
     // Redirect the user to 'https://t.me/burlive_bot'
     res.redirect('https://t.me/burlive_bot');
+});
+app.use(morgan("dev"));
+app.use(cors());
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
