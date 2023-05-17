@@ -22,7 +22,9 @@ async function set_webhook () {
         // @ts-ignore
         await bot.telegram.setWebhook(`https://profori.pro/bot123`).then(() => {
             console.log('webhook setted');
-        });
+        }).catch(err => {
+            console.log(err)
+        })
     } else {
         await fetchData().catch((error: any) => {
             console.error('Error setting webhook:', error);
