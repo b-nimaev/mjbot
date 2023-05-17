@@ -20,7 +20,11 @@ app.post(`/bot123`, (req, res) => {
     bot.handleUpdate(req.body, res);
 });
 
-if (process.env.mode === 'production') {
+console.log(process.env.mode?.replace(/"/g, ''))
+console.log(process.env.mode?.replace(/"/g, '') === 'production')
+console.log(typeof (process.env.mode?.replace(/"/g, '')))
+
+if (process.env.mode?.replace(/"/g, '') === 'production') {
     const privateKey = fs.readFileSync('/app/ssl/privkey.pem', 'utf8');
     const certificate = fs.readFileSync('/app/ssl/fullchain.pem', 'utf8');
 
@@ -34,7 +38,7 @@ if (process.env.mode === 'production') {
     server.listen(PORT, () => {
         console.log(`Server listening on port ${PORT}`)
     })
-    
+
 } else {
     // Start the server and listen on the specified port
     app.listen(PORT, () => {
