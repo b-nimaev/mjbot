@@ -16,12 +16,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Stop port 5000
-        run: |
-          #!/bin/bash
-          kill $(lsof -t -i :5000)
-        shell: bash
-
       - name: Update code on server
         uses: appleboy/ssh-action@master
         with:
