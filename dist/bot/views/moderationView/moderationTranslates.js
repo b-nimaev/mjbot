@@ -1,0 +1,131 @@
+"use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.render_vote_sentence = void 0;
+const mongodb_1 = require("mongodb");
+const ISentence_1 = require("../../../models/ISentence");
+function moderation_translates(ctx) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            yield render_vote_sentence(ctx);
+        }
+        catch (err) {
+            console.log(err);
+        }
+    });
+}
+exports.default = moderation_translates;
+function render_vote_sentence(ctx) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            // получаем перевод и предложение которое переведено
+            let translation = yield ISentence_1.Translation.aggregate([
+                { $addFields: { votesCount: { $size: "$votes" } } },
+                { $sort: { votesCount: 1 } },
+                { $limit: 1 }
+            ]).then((response) => __awaiter(this, void 0, void 0, function* () {
+                return response[0];
+            })).catch((err) => __awaiter(this, void 0, void 0, function* () {
+                console.error(err);
+            }));
+            if (!translation) {
+                if (ctx.updateType === 'callback_query') {
+                    return ctx.answerCbQuery('Предложений не найдено');
+                }
+            }
+            let sentence_russian = yield ISentence_1.Sentence.findOne({
+                _id: new mongodb_1.ObjectId(translation === null || translation === void 0 ? void 0 : translation.sentence_russian)
+            });
+            // если перевод найден сохраним его в контекст
+            if (translation) {
+                // @ts-ignore
+                ctx.scene.session.current_translation_for_vote = translation._id;
+            }
+            // текст
+            let message = `<b>Модерация / Голосование</b>\n\n`;
+            message += `Предложение на русском языке <pre>${sentence_russian === null || sentence_russian === void 0 ? void 0 : sentence_russian.text}</pre> \n`;
+            // message += `Количество переводов: ${sentence_russian?.translations.length}\n\n`
+            message += `Проголосуйте за следующий перевод \n`;
+            message += `<pre>${translation === null || translation === void 0 ? void 0 : translation.translate_text}</pre>`;
+            let statistic = {
+                plus: [],
+                minus: []
+            };
+            if (translation) {
+                if (translation.votes) {
+                    if (translation.votes.length) {
+                        for (let i = 0; i < translation.votes.length; i++) {
+                            const voteID = translation.votes[i];
+                            const vote = yield ISentence_1.voteModel.findOne({ _id: voteID });
+                            if (vote === null || vote === void 0 ? void 0 : vote.vote) {
+                                statistic.plus.push(vote);
+                            }
+                            else {
+                                statistic.minus.push(vote);
+                            }
+                        }
+                        console.log(statistic.plus.length);
+                        console.log(statistic.minus.length);
+                        // message += `\n\nКоличество голосов: <pre>15+, 2-</pre>`
+                    }
+                }
+            }
+            let extra = {
+                parse_mode: 'HTML',
+                reply_markup: {
+                    inline_keyboard: [
+                        [
+                            {
+                                text: `👍 ${statistic.plus.length}`,
+                                callback_data: 'good'
+                            },
+                            {
+                                text: `👎 ${statistic.minus.length}`,
+                                callback_data: 'bad'
+                            }
+                        ],
+                        [
+                            {
+                                text: 'Предложить перевод',
+                                callback_data: 'addTranslate'
+                            }
+                        ],
+                        [
+                            {
+                                text: 'Пропустить',
+                                callback_data: 'skip'
+                            }
+                        ],
+                        [
+                            {
+                                text: 'Назад',
+                                callback_data: 'back'
+                            }
+                        ]
+                    ]
+                }
+            };
+            if (ctx.updateType === 'callback_query') {
+                ctx.editMessageText(message, extra);
+                ctx.answerCbQuery();
+            }
+            else {
+                ctx.reply(message, extra);
+            }
+            ctx.wizard.selectStep(2);
+        }
+        catch (err) {
+            console.log(err);
+        }
+    });
+}
+exports.render_vote_sentence = render_vote_sentence;
+//# sourceMappingURL=moderationTranslates.js.map
