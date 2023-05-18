@@ -43,39 +43,42 @@ app.get('/success', async (req, res) => {
                 _id: new ObjectId(billId)
             });
 
-            // Find the user document using the payment's user_id
-            let user: IUser | null = await User.findOne({
-                id: payment?.user_id
-            });
-
-            if (user && payment) {
-                // Send a sticker and a message to the user using the Telegram bot
-                await bot.telegram.sendSticker(user?.id, 'CAACAgIAAxkBAAEIRdBkHZukHX1iJJVPMeQmZvfKXRgfDQACiRkAAkHrwEvwxgiNPD3Rai8E');
-                await bot.telegram.sendMessage(user?.id, 'Спасибо за внесенный платеж!', {
-                    reply_markup: {
-                        inline_keyboard: [
-                            [
-                                {
-                                    text: 'Назад',
-                                    callback_data: 'back'
-                                }
-                            ]
-                        ]
-                    }
+            if (payment) {
+                // Find the user document using the payment's user_id
+                let user: IUser | null = await User.findOne({
+                    id: payment?.user_id
                 });
 
-                // Update the user's 'supported' field by adding the payment amount
-                await User.findOneAndUpdate(
-                    {
-                        id: user.id
-                    },
-                    {
-                        $set: {
-                            supported: user.supported + payment.amount
+                if (user && payment) {
+                    // Send a sticker and a message to the user using the Telegram bot
+                    await bot.telegram.sendSticker(user?.id, 'CAACAgIAAxkBAAEIRdBkHZukHX1iJJVPMeQmZvfKXRgfDQACiRkAAkHrwEvwxgiNPD3Rai8E');
+                    await bot.telegram.sendMessage(user?.id, 'Спасибо за внесенный платеж!', {
+                        reply_markup: {
+                            inline_keyboard: [
+                                [
+                                    {
+                                        text: 'Назад',
+                                        callback_data: 'back'
+                                    }
+                                ]
+                            ]
                         }
-                    }
-                );
+                    });
+
+                    // Update the user's 'supported' field by adding the payment amount
+                    await User.findOneAndUpdate(
+                        {
+                            id: user.id
+                        },
+                        {
+                            $set: {
+                                supported: user.supported + payment.amount
+                            }
+                        }
+                    );
+                }
             }
+
         }
 
         // Redirect the user to 'https://t.me/burlive_bot'
