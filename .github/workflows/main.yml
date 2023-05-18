@@ -27,4 +27,4 @@ jobs:
             cd /opt/burlive
             git pull
             npx tsc -p tsconfig.json
-            nohup node dist/index.js > /dev/null 2>&1 & disown
+            nohup node dist/index.js > output.log 2>&1 & disown

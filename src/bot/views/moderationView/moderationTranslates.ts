@@ -48,14 +48,32 @@ export async function render_vote_sentence(ctx: rlhubContext) {
 
         // текст
         let message = `<b>Модерация / Голосование</b>\n\n`
-        message += `Предложение на русском языке <pre>${sentence_russian?.text}</pre> \n`
+        message += `Предложение  \n\n<pre>${sentence_russian?.text}</pre>\n`
         // message += `Количество переводов: ${sentence_russian?.translations.length}\n\n`
-        message += `\n\nПроголосуйте за следующий перевод \n`
+        message += `\n\nПеревод \n\n`
         message += `<pre>${translation?.translate_text}</pre>\n\n`
+
+        const options = {
+            weekday: 'short', // короткое название дня недели, например 'Пн'
+            year: 'numeric', // год, например '2023'
+            month: 'short', // короткое название месяца, например 'апр'
+            day: 'numeric', // число месяца, например '21'
+            hour: 'numeric', // часы, например '17'
+            minute: 'numeric', // минуты, например '14'
+            second: 'numeric', // секунды, например '33'
+        };
+
+        if (sentence_russian) {
+            const formattedDate = sentence_russian.createdAt.toLocaleDateString('ru-RU', options); // 'Пн, 21 апр. 2023'
+            message += `<pre>${formattedDate}</pre>`
+        }
+
         let statistic = {
             plus: <any>[],
             minus: <any>[]
         }
+
+        console.log(sentence_russian)
 
         if (translation) {
             if (translation.votes) {
