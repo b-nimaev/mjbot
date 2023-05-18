@@ -31,8 +31,9 @@ app.get("/", (req, res) => res.send("Бот запущен!"))
 app.get('/success', async (req, res) => {
     // Extract the billId from the request URL
     let billId: string = res.req.url.replace('/payment/success?billId=', '');
+    console.log('billd id^ next')
     console.log(billId);
-
+    console.log('end')
     // Find the payment document using the billId
     let payment: IPayment | null = await Payment.findOne({
         _id: new ObjectId(billId)
@@ -75,6 +76,7 @@ app.get('/success', async (req, res) => {
     // Redirect the user to 'https://t.me/burlive_bot'
     res.redirect('https://t.me/burlang_bot');
 });
+
 app.use(morgan("dev"));
 app.use(cors());
 app.listen(PORT, () => {
