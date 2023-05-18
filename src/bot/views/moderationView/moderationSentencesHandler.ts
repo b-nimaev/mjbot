@@ -121,7 +121,7 @@ export async function moderation_sentences(ctx: rlhubContext) {
                 const formattedDate = document.createdAt.toLocaleDateString('ru-RU', options); // 'Пн, 21 апр. 2023'
 
                 message += `${document.text} \n\n`
-                message += `<pre>${formattedDate}</pre>`
+                message += `\n\n<pre>\n\n${formattedDate}</pre>`
 
                 if (ctx.updateType === 'callback_query') {
 
