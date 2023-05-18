@@ -129,7 +129,8 @@ async function get_link_for_payment(ctx: rlhubContext, amount: number, billID: s
             account: `${ctx.from?.id}`,
             expirationDateTime: expirationDateTime,
             comment: 'На сохранение бурятского яызыка',
-            email: 'alexandrbnimaev@yandex.ru'
+            email: 'alexandrbnimaev@yandex.ru',
+            successUrl: `https://profori.pro/success?billId=${billID}`
         }
 
         let link = qiwiApi.createBill(billID, params)
