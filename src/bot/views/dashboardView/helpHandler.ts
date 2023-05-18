@@ -6,7 +6,7 @@ import { IPayment, Payment } from "../../../models/IPayment";
 const QiwiBillPaymentsAPI = require('@qiwi/bill-payments-node-js-sdk');
 
 const secret_key: string | undefined = process.env.secret_key;
-const publicKey: string | undefined = process.env.public_key;
+// const publicKey: string | undefined = process.env.public_key;
 
 const qiwiApi = new QiwiBillPaymentsAPI(secret_key);
 export default async function help_handler(ctx: rlhubContext) {
