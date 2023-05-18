@@ -4,7 +4,6 @@ import { IUser, User } from './models/IUser';
 import { IPayment, Payment } from './models/IPayment';
 import { ObjectId } from 'mongodb';
 import { bot } from './index';
-import fs from 'fs';
 import https from 'https';
 import cors from 'cors';
 const morgan = require("morgan")
