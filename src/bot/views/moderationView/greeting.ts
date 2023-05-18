@@ -7,7 +7,7 @@ export default async function greeting(ctx: rlhubContext) {
 
         let message: string = `<b>Модерация</b>\n\n`
 
-        message += `Здесь необходимо голосовать за качества переводов предложений и самих предложений`
+        message += `Секция`
 
         message += `Выберите раздел чтобы приступить`
 
