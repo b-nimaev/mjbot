@@ -30,7 +30,7 @@ app.get("/", (req, res) => res.send("Бот запущен!"))
 
 app.get('/success', async (req, res) => {
     // Extract the billId from the request URL
-    let billId: string = res.req.url.replace('/payment/success?billId=', '');
+    let billId: string = res.req.url.replace('/success?billId=', '');
     console.log('billd id^ next')
     console.log(billId);
     console.log('end')
