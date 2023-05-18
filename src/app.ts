@@ -28,15 +28,7 @@ console.log(typeof (process.env.mode?.replace(/"/g, '')))
 
 app.get("/", (req, res) => res.send("Бот запущен!"))
 
-// Handle GET request to '/success'
 app.get('/success', async (req, res) => {
-    // Extract the billId from the request URL
-    let billId: string = res.req.url.replace('/payment/success?billId=', '');
-    console.log(billId);
-});
-
-// Handle GET request to '/payment/success'
-app.get('/payment/success', async (req, res) => {
     // Extract the billId from the request URL
     let billId: string = res.req.url.replace('/payment/success?billId=', '');
     console.log(billId);
@@ -81,7 +73,7 @@ app.get('/payment/success', async (req, res) => {
     }
 
     // Redirect the user to 'https://t.me/burlive_bot'
-    res.redirect('https://t.me/burlive_bot');
+    res.redirect('https://t.me/burlang_bot');
 });
 app.use(morgan("dev"));
 app.use(cors());
