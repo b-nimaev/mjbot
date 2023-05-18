@@ -4,7 +4,6 @@ import { IUser, User } from './models/IUser';
 import { IPayment, Payment } from './models/IPayment';
 import { ObjectId } from 'mongodb';
 import { bot } from './index';
-import https from 'https';
 import cors from 'cors';
 const morgan = require("morgan")
 const PORT = process.env.PORT;
@@ -35,7 +34,7 @@ app.get('/success', async (req, res) => {
 
         console.log(billId);
 
-        if (billId) {
+        if (billId && (billId.indexOf('billId') == -1)) {
 
             // Find the payment document using the billId
             let payment: IPayment | null = await Payment.findOne({
