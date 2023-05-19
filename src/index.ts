@@ -15,8 +15,9 @@ import settings from './bot/views/settings.scene';
 import dashboard from './bot/views/dashboard.scene';
 import vocabular from './bot/views/vocabular.scene';
 import moderation from './bot/views/moderation.scene';
+import { createTextChangeRange } from 'typescript';
 
-const stage: any = new Scenes.Stage<rlhubContext>([home, vocabular, sentences, dashboard, moderation, settings], { default: 'home' });
+const stage: any = new Scenes.Stage<rlhubContext>([home, vocabular, sentences, dashboard, moderation, settings], { default: 'home', ttl: 100000 });
 
 bot.use(session())
 bot.use(stage.middleware())

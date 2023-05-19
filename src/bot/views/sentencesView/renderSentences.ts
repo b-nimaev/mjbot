@@ -9,7 +9,7 @@ export async function render_sentencse_for_translate(ctx: rlhubContext, sentence
     // Текущее предложение
     // @ts-ignore
     ctx.scene.session.sentence_id = sentence._id.toString()
-    message += `Отправьте перевод предложения: \n`
+    message += `<b>Отправьте перевод предложения: </b>\n\n`
     message += `<code>${sentence.text}</code>`
     message += `\n\n— Буквы отсутствующие в кириллице — <code>һ</code>, <code>ү</code>, <code>өө</code>, копируем из предложенных.`
 

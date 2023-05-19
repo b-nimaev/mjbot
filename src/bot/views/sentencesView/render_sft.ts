@@ -14,7 +14,7 @@ import translate_sentences from "./translateSentences";
 export default async function render_sft(ctx: rlhubContext) {
     try {
 
-        let message: string = `<b>Перевод предложений</b>\n\n`;
+        let message: string = ``;
         let extra: ExtraEditMessageText = {
             parse_mode: 'HTML',
             reply_markup: {
