@@ -13,6 +13,7 @@ export async function render_sentencse_for_translate(ctx: rlhubContext, sentence
     message += `<code>${sentence.text}</code>`
     message += `\n\n— Буквы отсутствующие в кириллице — <code>һ</code>, <code>ү</code>, <code>өө</code>, копируем из предложенных.`
 
+    
     if (sentence?.translations.length) {
 
         // получаем существующие переводы
