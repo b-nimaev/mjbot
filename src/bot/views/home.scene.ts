@@ -7,7 +7,7 @@ import rlhubContext from "../models/rlhubContext";
 const handler = new Composer<rlhubContext>();
 const home = new Scenes.WizardScene("home", handler, async (ctx: rlhubContext) => await add_sentences_handler(ctx));
 
-async function greeting (ctx: rlhubContext) {
+export async function greeting (ctx: rlhubContext) {
 
     const extra: ExtraEditMessageText = {
         parse_mode: 'HTML',
@@ -30,11 +30,11 @@ async function greeting (ctx: rlhubContext) {
 
     try {
 
-        ctx.updateType === 'message' ? await ctx.reply(message, extra) : false
-        ctx.updateType === 'callback_query' ? await ctx.editMessageText(message, extra) : false
+        // ctx.updateType === 'message' ? await ctx.reply(message, extra) : false
+        ctx.updateType === 'callback_query' ? await ctx.editMessageText(message, extra) : ctx.reply(message,extra)
 
     } catch (err) {
-        console.error(err);
+        console.log(err)
     }
 }
 
@@ -238,7 +238,7 @@ async function add_sentences_handler (ctx: rlhubContext) {
     
 }
 
-handler.on("message", async (ctx) => await greeting (ctx))
-handler.action(/\./, async (ctx) => await greeting (ctx))
+home.on("message", async (ctx) => await greeting (ctx))
+home.action(/\./, async (ctx) => await greeting (ctx))
 export default home
 export { add_sentences_handler }
