@@ -1,5 +1,5 @@
 import { Composer, Scenes } from "telegraf";
-import { Translation, voteModel } from "../../models/ISentence";
+import { Sentence, Translation, voteModel } from "../../models/ISentence";
 import rlhubContext from "../models/rlhubContext";
 import { User } from "../../models/IUser";
 import greeting from "./moderationView/greeting";
@@ -7,19 +7,60 @@ import greeting from "./moderationView/greeting";
 // handlers and renders 
 import moderation_translates, { render_vote_sentence } from "./moderationView/moderationTranslates";
 import { moderation_sentences, updateSentence } from "./moderationView/moderationSentencesHandler";
+import { ObjectId } from "mongodb";
+import { ExtraEditMessageText } from "telegraf/typings/telegram-types";
 
 const handler = new Composer<rlhubContext>();
 const moderation = new Scenes.WizardScene("moderation", handler,
     async (ctx: rlhubContext) => moderation_sentences_handler(ctx),
-    async (ctx: rlhubContext) => moderation_translates_handler(ctx));
+    async (ctx: rlhubContext) => moderation_translates_handler(ctx),
+    async (ctx: rlhubContext) => moderation_report_handler(ctx)
+)
+async function moderation_report_handler(ctx: rlhubContext) {
 
+    try {
+
+        if (ctx.updateType === 'callback_query' || ctx.updateType === 'message') {
+            
+
+            if (ctx.updateType === 'callback_query') {
+                if (ctx.update.callback_query.data === 'continue') {
+                    await render_vote_sentence(ctx)
+                }
+            }
+
+            if (ctx.updateType === 'message') {
+                
+                let message: string = `<b>Спасибо!</b> \nВаше сообщение принято на рассмотрение.`
+                await ctx.reply(message, {
+                    parse_mode: 'HTML',
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{ text: 'Вернуться к модерации', callback_data: 'continue' }]
+                        ]
+                    }
+                })
+
+            }
+
+        } else {
+            await report_section_render(ctx)
+        }
+
+        ctx.answerCbQuery()
+
+    } catch (err) {
+        console.error(err)
+    }
+
+}
 moderation.enter(async (ctx: rlhubContext) => await greeting(ctx));
 
 moderation.action("moderation_sentences", async (ctx) => await moderation_sentences(ctx))
 
 async function moderation_sentences_handler(ctx: rlhubContext) {
     try {
-        
+
         let update = ctx.updateType
 
         if (update === 'callback_query') {
@@ -44,7 +85,7 @@ async function moderation_sentences_handler(ctx: rlhubContext) {
         } else {
 
             await moderation_sentences(ctx)
-            
+
         }
 
     } catch (err) {
@@ -76,7 +117,7 @@ async function moderation_translates_handler(ctx: rlhubContext) {
                 await Translation.findOneAndUpdate({ _id: translate_id }, { $push: { votes: vote_id } })
                 await User.findOneAndUpdate({ _id: user?._id }, { $addToSet: { voted_translations: translate_id } })
             })
-            
+
             await render_vote_sentence(ctx)
 
         } else if (data === 'bad') {
@@ -116,6 +157,59 @@ async function moderation_translates_handler(ctx: rlhubContext) {
 moderation.action("moderation_vocabular", async (ctx) => {
     ctx.answerCbQuery('Модерация словаря в разработке')
 })
+
+
+moderation.action("report", async (ctx) => await report_section_render(ctx))
+
+async function report_section_render(ctx: rlhubContext) {
+    try {
+
+        let message: string = '<b>Модерация / Голосование / Жалоба</b>\n\n'
+        let translation = await Translation.findOne({
+            // @ts-ignore
+            _id: ctx.scene.session.current_translation_for_vote
+        })
+
+        if (translation) {
+            let sentence_russian = await Sentence.findOne({
+                _id: new ObjectId(translation?.sentence_russian)
+            })
+
+            if (sentence_russian) {
+                message += `Предложение\n\n`
+                message += `<code>${sentence_russian.text}</code>\n\n`
+            }
+
+            message += `Перевод\n\n`
+            message += `<code>${translation.translate_text}</code>`
+
+            message += `\n\n<b>Отправьте следующим сообщением, причину жалобы</b>`
+
+            let extra: ExtraEditMessageText = {
+                parse_mode: 'HTML',
+                reply_markup: {
+                    inline_keyboard: [
+                        [{ text: 'Назад', callback_data: 'back' }]
+                    ]
+                }
+            }
+
+            if (ctx.updateType === 'callback_query') {
+                await ctx.editMessageText(message, extra).then(() => {
+                    ctx.wizard.selectStep(3)
+                })
+            } else {
+                await ctx.reply(message, extra).then(() => {
+                    ctx.wizard.selectStep(3)
+                })
+            }
+
+        }
+
+    } catch (err) {
+        console.error(err)
+    }
+}
 
 handler.on("message", async (ctx) => await greeting(ctx))
 

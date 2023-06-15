@@ -2,7 +2,6 @@ import { ObjectId } from "mongodb"
 import { ExtraEditMessageText } from "telegraf/typings/telegram-types"
 import { Translation, Sentence, voteModel, translation } from "../../../models/ISentence"
 import rlhubContext from "../../models/rlhubContext"
-import { response } from "express"
 
 export default async function moderation_translates(ctx: rlhubContext) {
     try {
@@ -112,6 +111,10 @@ export async function render_vote_sentence(ctx: rlhubContext) {
                             callback_data: 'good'
                         },
                         {
+                            text: `Не знаю`,
+                            callback_data: 'dontknow'
+                        },
+                        {
                             text: `👎 ${statistic.minus.length}`,
                             callback_data: 'bad'
                         }
@@ -124,8 +127,8 @@ export async function render_vote_sentence(ctx: rlhubContext) {
                     ],
                     [
                         {
-                            text: 'Пропустить',
-                            callback_data: 'skip'
+                            text: 'Пожаловаться',
+                            callback_data: 'report'
                         }
                     ],
                     [

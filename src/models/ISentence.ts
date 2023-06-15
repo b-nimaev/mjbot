@@ -30,6 +30,8 @@ const translationSchema: Schema<translation> = new mongoose.Schema({
     author: { type: Number, required: true },
     votes: {  type: [mongoose.Schema.Types.ObjectId], required: false },
     skipped_by: { type: [mongoose.Schema.Types.ObjectId], required: false }
+}, {
+    timestamps: true
 })
 
 const Translation = model<translation>("Translation", translationSchema);
