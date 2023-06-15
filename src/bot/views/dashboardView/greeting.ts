@@ -47,7 +47,7 @@ export default async function greeting(ctx: rlhubContext) {
                                 },
                                 {
                                     text: 'Обратная связь',
-                                    callback_data: 'contact'
+                                    url: 'https://t.me/bur_live'
                                 }
                             ],
                         ]
