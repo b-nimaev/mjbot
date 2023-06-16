@@ -25,6 +25,7 @@ jobs:
           script: |
             lsof -i :5000 | awk 'NR!=1 {print $2}' | xargs kill -9
             cd /opt/burlive
+            git restore .
             git pull
             npx tsc -p tsconfig.json
             nohup node dist/index.js > output.log 2>&1 & disown
