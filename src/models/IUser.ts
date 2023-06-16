@@ -7,6 +7,7 @@ interface IUser extends User {
     rating: number; // добавлено поле "рейтинг",
     supported: number;
     proposedProposals: string[];
+    reports?: ObjectId[]
 }
 
 const userSchema: Schema<IUser> = new Schema<IUser>({
@@ -15,6 +16,7 @@ const userSchema: Schema<IUser> = new Schema<IUser>({
     first_name: { type: String, required: false },
     last_name: { type: String, required: false },
     supported: { type: Number, required: true },
+    reports: { type: [mongoose.Schema.Types.ObjectId], required: false },
     translations: { type: [mongoose.Schema.Types.ObjectId], required: false, default: [] }, // добавлено поле "переводы"
     voted_translations: { type: [mongoose.Schema.Types.ObjectId], required: false, default: [] }, // добавлено поле "голосование за переводы"
     rating: { type: Number, required: true, default: 1 }, // добавлено поле "рейтинг",

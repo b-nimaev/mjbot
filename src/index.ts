@@ -48,6 +48,5 @@ const stage: any = new Scenes.Stage<rlhubContext>([home, vocabular, sentences, d
         console.log(err)
     }
 })();
-
 bot.use(session())
 bot.use(stage.middleware())

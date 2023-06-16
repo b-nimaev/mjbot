@@ -1,7 +1,7 @@
 import { Composer, Scenes } from "telegraf";
 import { Sentence, Translation, voteModel } from "../../models/ISentence";
 import rlhubContext from "../models/rlhubContext";
-import { User } from "../../models/IUser";
+import { IUser, User } from "../../models/IUser";
 import greeting from "./moderationView/greeting";
 
 // handlers and renders 
@@ -9,6 +9,7 @@ import moderation_translates, { render_vote_sentence } from "./moderationView/mo
 import { moderation_sentences, updateSentence } from "./moderationView/moderationSentencesHandler";
 import { ObjectId } from "mongodb";
 import { ExtraEditMessageText } from "telegraf/typings/telegram-types";
+import { IReport, ReportModel } from "../../models/IReport";
 
 const handler = new Composer<rlhubContext>();
 const moderation = new Scenes.WizardScene("moderation", handler,
@@ -24,13 +25,40 @@ async function moderation_report_handler(ctx: rlhubContext) {
             
 
             if (ctx.updateType === 'callback_query') {
-                if (ctx.update.callback_query.data === 'continue') {
+                if (ctx.update.callback_query.data === 'continue' || ctx.update.callback_query.data === 'back') {
                     await render_vote_sentence(ctx)
-                }
+                }                
             }
 
             if (ctx.updateType === 'message') {
                 
+                // отправка жалобы в канал
+                let senderReport = await ctx.telegram.forwardMessage('-1001952917634', ctx.update.message.chat.id, ctx.message.message_id)
+                let user: IUser | null = await User.findOne({
+                    id: ctx.from?.id
+                })
+
+                if (user) {
+                    
+                    let report: IReport = {
+                        // @ts-ignore
+                        user_id: user._id,
+                        translation_id: ctx.scene.session.current_translation_for_vote,
+                        message_id: senderReport.message_id
+                    }
+
+                    await new ReportModel(report).save().then(async (report) => {
+                        await User.findOneAndUpdate({
+                            id: ctx.from?.id
+                        }, {
+                            $push: {
+                                reports: report._id
+                            }
+                        })
+                    })
+
+                }
+
                 let message: string = `<b>Спасибо!</b> \nВаше сообщение принято на рассмотрение.`
                 await ctx.reply(message, {
                     parse_mode: 'HTML',
