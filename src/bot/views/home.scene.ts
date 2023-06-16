@@ -22,7 +22,8 @@ export async function greeting (ctx: rlhubContext) {
                 [{ text: 'Предложения', callback_data: 'sentences' }],
                 [{ text: 'Переводчик', callback_data: 'translater' }],
                 [{ text: 'Модерация', callback_data: 'moderation' }],
-                [{ text: "Личный кабинет", callback_data: "dashboard" }]
+                [{ text: "🔐 Chat GPT", callback_data: "chatgpt" }],
+                [{ text: "Личный кабинет", callback_data: "dashboard" }],
             ]
         }
     }
@@ -98,6 +99,11 @@ home.action("study", async (ctx) => {
 home.action("moderation", async (ctx) => {
     ctx.answerCbQuery()
     return ctx.scene.enter('moderation')
+})
+
+home.action("chatgpt", async (ctx) => {
+    ctx.answerCbQuery()
+    return ctx.scene.enter('chatgpt')
 })
 
 home.action("dashboard", async (ctx) => {

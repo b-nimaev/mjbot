@@ -6,7 +6,8 @@ interface rlhubWizardSession extends Scenes.WizardSessionData {
     amount: number,
     active_translation: string,
     moderation_sentence: string,
-    current_translation_for_vote: ObjectId
+    current_translation_for_vote: ObjectId,
+    current_chat: any
 }
 
 interface rlhubSession extends Scenes.WizardSession<rlhubWizardSession> {
