@@ -134,7 +134,7 @@ async function moderation_translates_handler(ctx: rlhubContext) {
 
         if (user) {
             if (data === 'good') {
-
+                
                 // Сохраняем голос +
                 await new voteModel({ user_id: user?._id, translation_id: translate_id, vote: true }).save().then(async (data) => {
 

@@ -2,6 +2,7 @@ import { ObjectId } from "mongodb"
 import { ExtraEditMessageText } from "telegraf/typings/telegram-types"
 import { Translation, Sentence, voteModel, translation } from "../../../models/ISentence"
 import rlhubContext from "../../models/rlhubContext"
+import greeting from "./greeting"
 
 export default async function moderation_translates(ctx: rlhubContext) {
     try {
@@ -30,7 +31,8 @@ export async function render_vote_sentence(ctx: rlhubContext) {
 
         if (!translation) {
             if (ctx.updateType === 'callback_query') {
-                return ctx.answerCbQuery('Предложений не найдено')
+                ctx.answerCbQuery('Предложений не найдено')
+                return await greeting(ctx)
             }
         } 
 
