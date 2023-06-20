@@ -183,7 +183,7 @@ async function moderation_translates_handler(ctx: rlhubContext) {
                                 if (rating > 3) {
 
                                     await new ConfirmedTranslations(newtranslation?.toObject()).save()
-                                
+                                    await Translation.findByIdAndDelete(newtranslation?._id)
                                 }
 
                             })
