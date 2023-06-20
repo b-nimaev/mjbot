@@ -153,7 +153,7 @@ async function moderation_translates_handler(ctx: rlhubContext) {
                                 let pluses = 0
                                 let minuses = 0
 
-                                for (let i = 0; i < votes.length; i++) {
+                                for (let i = 0; i <= votes.length; i++) {
 
                                     let voteDocument = await voteModel.findById(votes[i])
 
