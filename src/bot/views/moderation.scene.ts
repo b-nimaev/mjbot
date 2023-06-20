@@ -126,7 +126,6 @@ moderation.action("moderation_translates", async (ctx) => await moderation_trans
 async function moderation_translates_handler(ctx: rlhubContext) {
     if (ctx.updateType === 'callback_query') {
 
-
         // сохраняем коллбэк
         let data: 'back' | 'addTranslate' | 'good' | 'bad' | 'skip' = ctx.update.callback_query.data
         let translate_id = ctx.scene.session.current_translation_for_vote
@@ -148,7 +147,7 @@ async function moderation_translates_handler(ctx: rlhubContext) {
 
                             let votes = translation.votes
                             let rating = 0
-                            
+
                             if (votes) {
 
                                 let pluses = 0
