@@ -1,5 +1,5 @@
 import { ExtraEditMessageText } from "telegraf/typings/telegram-types"
-import { translation, Translation } from "../../../models/ISentence"
+import { ConfirmedTranslations, translation, Translation } from "../../../models/ISentence"
 import rlhubContext from "../../models/rlhubContext"
 import formatMoney from "../../utlis/format_money"
 
@@ -39,8 +39,8 @@ export default async function greeting(ctx: rlhubContext) {
         }
 
         let sentences: translation[] = await Translation.find()
-
-        let left = 100000 - sentences.length
+        let confirmed = await ConfirmedTranslations.find()
+        let left = 100000 - confirmed.length
 
 
 
