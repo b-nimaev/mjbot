@@ -85,10 +85,6 @@ bot.command('update_translates_collection', async (ctx) => {
         let votes = element.votes
         let rating = 0
 
-        if (element.rating) {
-            rating = element.rating
-        }
-
         if (votes) {
             
             let pluses = 0

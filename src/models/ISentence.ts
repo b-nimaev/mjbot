@@ -37,6 +37,7 @@ const translationSchema: Schema<translation> = new mongoose.Schema({
 })
 
 const Translation = model<translation>("Translation", translationSchema);
+const ConfirmedTranslations = model<translation>("Translatios_confirmed", translationSchema);
 
 interface active_translator {
     _id?: ObjectId;
@@ -74,4 +75,4 @@ const Sentence = model<ISentence>("Sentence", new Schema({
     timestamps: true
 }));
 
-export { Sentence, Translation, ISentence, translation, active_translator, ActiveTranslator, vote };
+export { Sentence, Translation, ISentence, translation, active_translator, ActiveTranslator, ConfirmedTranslations, vote };

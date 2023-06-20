@@ -1,5 +1,5 @@
 import { Composer, Scenes } from "telegraf";
-import { Sentence, Translation, voteModel } from "../../models/ISentence";
+import { ConfirmedTranslations, Sentence, Translation, voteModel } from "../../models/ISentence";
 import rlhubContext from "../models/rlhubContext";
 import { IUser, User } from "../../models/IUser";
 import greeting from "./moderationView/greeting";
@@ -143,10 +143,58 @@ async function moderation_translates_handler(ctx: rlhubContext) {
                     let vote_id = data._id
 
                     // пушим в массив голосов докумена перевода
-                    await Translation.findOneAndUpdate({ _id: translate_id }, { $push: { votes: vote_id } })
+                    await Translation.findOneAndUpdate({ _id: translate_id }, { $push: { votes: vote_id } }).then(async (translation) => {
+                        if (translation) {
+
+                            let votes = translation.votes
+                            let rating = 0
+                            
+                            if (votes) {
+
+                                let pluses = 0
+                                let minuses = 0
+
+                                for (let i = 0; i < votes.length; i++) {
+
+                                    let voteDocument = await voteModel.findById(votes[i])
+
+                                    if (voteDocument) {
+
+                                        if (voteDocument.vote === true) {
+                                            pluses++
+                                        } else {
+                                            minuses++
+                                        }
+
+                                    }
+
+                                }
+
+                                rating = pluses - minuses
+                            }
+
+                            await Translation.findByIdAndUpdate(translation._id, {
+
+                                $set: {
+                                    rating: rating
+                                }
+
+                            }).then(async (newtranslation) => {
+
+                                if (rating > 3) {
+
+                                    await new ConfirmedTranslations(newtranslation?.toObject()).save()
+                                
+                                }
+
+                            })
+
+                        }
+                    })
+
                     await User.findOneAndUpdate({ _id: user?._id }, { $addToSet: { voted_translations: translate_id } })
                 })
-
+                
                 await render_vote_sentence(ctx)
 
             } else if (data === 'bad') {
