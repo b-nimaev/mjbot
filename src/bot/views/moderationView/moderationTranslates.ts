@@ -1,6 +1,6 @@
 import { ObjectId } from "mongodb"
 import { ExtraEditMessageText } from "telegraf/typings/telegram-types"
-import { Translation, Sentence, voteModel, translation } from "../../../models/ISentence"
+import { Translation, Sentence, voteModel, translation, ConfirmedTranslations } from "../../../models/ISentence"
 import rlhubContext from "../../models/rlhubContext"
 import greeting from "./greeting"
 
@@ -20,7 +20,7 @@ export async function render_vote_sentence(ctx: rlhubContext) {
     try {
 
         // получаем перевод и предложение которое переведено
-        let translation: translation = await Translation.aggregate([
+        let translation = await Translation.aggregate([
             { $sort: { rating: -1 } },
             { $limit: 1 }
         ]).then(async (response) => {
@@ -73,7 +73,7 @@ export async function render_vote_sentence(ctx: rlhubContext) {
             minus: <any>[]
         }
 
-        console.log(sentence_russian)
+        // console.log(sentence_russian)
 
         if (translation) {
             if (translation.votes) {
@@ -93,8 +93,23 @@ export async function render_vote_sentence(ctx: rlhubContext) {
 
                     }
 
-                    console.log(statistic.plus.length)
-                    console.log(statistic.minus.length)
+                    let realRating = statistic.plus.length - statistic.minus.length
+
+                    // @ts-ignore
+                    await Translation.findByIdAndUpdate(translation._id, {
+
+                        $set: {
+                            rating: realRating
+                        }
+
+                    })
+
+                    if (realRating == 3) {
+
+                        await new ConfirmedTranslations(translation).save()
+                        await Translation.findByIdAndDelete(translation?._id)
+
+                    }
 
                     // message += `\n\nКоличество голосов: <pre>15+, 2-</pre>`
 

@@ -123,6 +123,7 @@ async function moderation_sentences_handler(ctx: rlhubContext) {
 
 moderation.action("moderation_translates", async (ctx) => await moderation_translates(ctx))
 async function updateRating(translation: translation) {
+    
     let votes = translation.votes
     let rating: number = 0
 
@@ -147,10 +148,14 @@ async function updateRating(translation: translation) {
 
         }
 
-        rating = pluses - minuses
+        console.log(`pluses: ${pluses}`)
+        console.log(`minuses: ${minuses}`)
 
+        rating = pluses - minuses
+        // console.log(rating)
         return rating
     }
+    // console.log(rating)
 }
 async function ratingHandler(translation: any) {
     if (translation) {
