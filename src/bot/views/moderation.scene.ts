@@ -1,5 +1,5 @@
 import { Composer, Scenes } from "telegraf";
-import { ConfirmedTranslations, Sentence, Translation, voteModel } from "../../models/ISentence";
+import { ConfirmedTranslations, Sentence, Translation, translation, voteModel } from "../../models/ISentence";
 import rlhubContext from "../models/rlhubContext";
 import { IUser, User } from "../../models/IUser";
 import greeting from "./moderationView/greeting";
@@ -22,16 +22,16 @@ async function moderation_report_handler(ctx: rlhubContext) {
     try {
 
         if (ctx.updateType === 'callback_query' || ctx.updateType === 'message') {
-            
+
 
             if (ctx.updateType === 'callback_query') {
                 if (ctx.update.callback_query.data === 'continue' || ctx.update.callback_query.data === 'back') {
                     await render_vote_sentence(ctx)
-                }                
+                }
             }
 
             if (ctx.updateType === 'message') {
-                
+
                 // отправка жалобы в канал
                 let senderReport = await ctx.telegram.forwardMessage('-1001952917634', ctx.update.message.chat.id, ctx.message.message_id)
                 let user: IUser | null = await User.findOne({
@@ -39,7 +39,7 @@ async function moderation_report_handler(ctx: rlhubContext) {
                 })
 
                 if (user) {
-                    
+
                     let report: IReport = {
                         // @ts-ignore
                         user_id: user._id,
@@ -122,6 +122,63 @@ async function moderation_sentences_handler(ctx: rlhubContext) {
 }
 
 moderation.action("moderation_translates", async (ctx) => await moderation_translates(ctx))
+async function updateRating(translation: translation) {
+    let votes = translation.votes
+    let rating: number = 0
+
+    if (votes) {
+
+        let pluses = 0
+        let minuses = 0
+
+        for (let i = 0; i < votes.length; i++) {
+
+            let voteDocument = await voteModel.findById(votes[i])
+
+            if (voteDocument) {
+
+                if (voteDocument.vote === true) {
+                    pluses = pluses + 1
+                } else {
+                    minuses = minuses + 1
+                }
+
+            }
+
+        }
+
+        rating = pluses - minuses
+
+        return rating
+    }
+}
+async function ratingHandler(translation: any) {
+    if (translation) {
+
+        let rating: number | undefined = await updateRating(translation)
+        if (rating) {
+
+            // @ts-ignore
+            await Translation.findByIdAndUpdate(translation._id, {
+
+                $set: {
+                    rating: rating
+                }
+
+            }).then(async (newtranslation) => {
+
+                // @ts-ignore
+                if (rating >= 3) {
+
+                    await new ConfirmedTranslations(newtranslation?.toObject()).save()
+                    await Translation.findByIdAndDelete(newtranslation?._id)
+                }
+
+            })
+        }
+
+    }
+}
 // обрабатываем голос
 async function moderation_translates_handler(ctx: rlhubContext) {
     if (ctx.updateType === 'callback_query') {
@@ -134,7 +191,7 @@ async function moderation_translates_handler(ctx: rlhubContext) {
 
         if (user) {
             if (data === 'good') {
-                
+
                 // Сохраняем голос +
                 await new voteModel({ user_id: user?._id, translation_id: translate_id, vote: true }).save().then(async (data) => {
 
@@ -142,58 +199,12 @@ async function moderation_translates_handler(ctx: rlhubContext) {
                     let vote_id = data._id
 
                     // пушим в массив голосов докумена перевода
-                    await Translation.findOneAndUpdate({ _id: translate_id }, { $push: { votes: vote_id } }).then(async (translation) => {
-                        if (translation) {
-
-                            let votes = translation.votes
-                            let rating = 0
-
-                            if (votes) {
-
-                                let pluses = 0
-                                let minuses = 0
-
-                                for (let i = 0; i <= votes.length; i++) {
-
-                                    let voteDocument = await voteModel.findById(votes[i])
-
-                                    if (voteDocument) {
-
-                                        if (voteDocument.vote === true) {
-                                            pluses++
-                                        } else {
-                                            minuses++
-                                        }
-
-                                    }
-
-                                }
-
-                                rating = pluses - minuses
-                            }
-
-                            await Translation.findByIdAndUpdate(translation._id, {
-
-                                $set: {
-                                    rating: rating
-                                }
-
-                            }).then(async (newtranslation) => {
-
-                                if (rating > 3) {
-
-                                    await new ConfirmedTranslations(newtranslation?.toObject()).save()
-                                    await Translation.findByIdAndDelete(newtranslation?._id)
-                                }
-
-                            })
-
-                        }
-                    })
+                    await Translation.findOneAndUpdate({ _id: translate_id }, { $push: { votes: vote_id } })
+                        .then(async (translation) => await ratingHandler(translation))
 
                     await User.findOneAndUpdate({ _id: user?._id }, { $addToSet: { voted_translations: translate_id } })
                 })
-                
+
                 await render_vote_sentence(ctx)
 
             } else if (data === 'bad') {
@@ -204,9 +215,10 @@ async function moderation_translates_handler(ctx: rlhubContext) {
                     // вернули айдишку
                     let vote_id = data._id
 
+                    await User.findOneAndUpdate({ _id: user?._id }, { $addToSet: { voted_translations: translate_id } })
                     // сохранили айдишку в документе перевода
                     await Translation.findOneAndUpdate({ _id: translate_id }, { $push: { votes: vote_id } })
-                    await User.findOneAndUpdate({ _id: user?._id }, { $addToSet: { voted_translations: translate_id } })
+                        .then(async (translation) => await ratingHandler(translation))
                 })
 
                 await render_vote_sentence(ctx)
