@@ -10,7 +10,7 @@ const username = encodeURIComponent("alexandr");
 const password = encodeURIComponent((_a = process.env.password) === null || _a === void 0 ? void 0 : _a.replace(/"/g, ''));
 console.log(username);
 console.log(password);
-mongoose_1.default.connect(`mongodb://${username}:${password}@87.236.22.124:27017/profori?authSource=admin`, {
+mongoose_1.default.connect(`mongodb://${username}:${password}@87.236.22.124:27017/burlang?authSource=admin`, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 }).catch(error => { console.error(error); });

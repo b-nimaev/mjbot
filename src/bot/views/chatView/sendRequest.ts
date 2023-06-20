@@ -2,9 +2,12 @@ import { Configuration, OpenAIApi } from "openai";
 import rlhubContext from "../../models/rlhubContext";
 import { ObjectId } from "mongoose";
 import { ChatModel } from "../../../models/IChat";
+import dotenv from 'dotenv';
+dotenv.config()
 const configuration = new Configuration({
-    apiKey: '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',
+    apiKey: process.env.apikey,
 });
+
 const openai = new OpenAIApi(configuration);
 
 export async function sendRequest(ctx: rlhubContext) {
@@ -24,7 +27,7 @@ export async function sendRequest(ctx: rlhubContext) {
 
         const chatCompletion = await openai.createChatCompletion({
             model: "gpt-3.5-turbo",
-            temperature: .4,
+            temperature: .1,
             // @ts-ignore
             messages: [{ role: "user", content: newDoc?.context.trim() }],
         });

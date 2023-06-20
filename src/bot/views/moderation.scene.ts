@@ -133,36 +133,49 @@ async function moderation_translates_handler(ctx: rlhubContext) {
 
         let user = await User.findOne({ id: ctx.from?.id })
 
-        if (data === 'good') {
+        if (user) {
+            if (data === 'good') {
 
-            // Сохраняем голос +
-            await new voteModel({ user_id: user?._id, translation_id: translate_id, vote: true }).save().then(async (data) => {
+                // Сохраняем голос +
+                await new voteModel({ user_id: user?._id, translation_id: translate_id, vote: true }).save().then(async (data) => {
 
-                // Возвращаем _id сохранненого голоса
-                let vote_id = data._id
+                    // Возвращаем _id сохранненого голоса
+                    let vote_id = data._id
 
-                // пушим в массив голосов докумена перевода
-                await Translation.findOneAndUpdate({ _id: translate_id }, { $push: { votes: vote_id } })
-                await User.findOneAndUpdate({ _id: user?._id }, { $addToSet: { voted_translations: translate_id } })
-            })
+                    // пушим в массив голосов докумена перевода
+                    await Translation.findOneAndUpdate({ _id: translate_id }, { $push: { votes: vote_id } })
+                    await User.findOneAndUpdate({ _id: user?._id }, { $addToSet: { voted_translations: translate_id } })
+                })
 
-            await render_vote_sentence(ctx)
+                await render_vote_sentence(ctx)
 
-        } else if (data === 'bad') {
+            } else if (data === 'bad') {
 
-            // сохраняем голос -
-            await new voteModel({ user_id: user?._id, translation_id: translate_id, vote: false }).save().then(async (data) => {
+                // сохраняем голос -
+                await new voteModel({ user_id: user?._id, translation_id: translate_id, vote: false }).save().then(async (data) => {
 
-                // вернули айдишку
-                let vote_id = data._id
+                    // вернули айдишку
+                    let vote_id = data._id
 
-                // сохранили айдишку в документе перевода
-                await Translation.findOneAndUpdate({ _id: translate_id }, { $push: { votes: vote_id } })
-                await User.findOneAndUpdate({ _id: user?._id }, { $addToSet: { voted_translations: translate_id } })
-            })
+                    // сохранили айдишку в документе перевода
+                    await Translation.findOneAndUpdate({ _id: translate_id }, { $push: { votes: vote_id } })
+                    await User.findOneAndUpdate({ _id: user?._id }, { $addToSet: { voted_translations: translate_id } })
+                })
 
-            await render_vote_sentence(ctx)
+                await render_vote_sentence(ctx)
 
+            } else if (data === 'skip') {
+
+                await Translation.findByIdAndUpdate(translate_id, {
+                    $push: {
+                        skipped_by: user._id
+                    }
+                })
+
+            }
+        } else {
+            ctx.wizard.selectStep(0)
+            await greeting(ctx)
         }
 
         // Если чел хочет вернутьтся на начальный экран модерации

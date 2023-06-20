@@ -246,7 +246,7 @@ async function add_sentences_handler (ctx: rlhubContext) {
     
 }
 
-home.on("message", async (ctx) => await greeting (ctx))
+// home.on("message", async (ctx) => await greeting (ctx))
 home.action(/\./, async (ctx) => {
     console.log(ctx)
     await greeting(ctx)

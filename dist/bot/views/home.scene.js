@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.add_sentences_handler = void 0;
+exports.add_sentences_handler = exports.greeting = void 0;
 const telegraf_1 = require("telegraf");
 const ISentence_1 = require("../../models/ISentence");
 const IUser_1 = require("../../models/IUser");
@@ -17,6 +17,7 @@ const handler = new telegraf_1.Composer();
 const home = new telegraf_1.Scenes.WizardScene("home", handler, (ctx) => __awaiter(void 0, void 0, void 0, function* () { return yield add_sentences_handler(ctx); }));
 function greeting(ctx) {
     return __awaiter(this, void 0, void 0, function* () {
+        console.log(ctx.update.message);
         const extra = {
             parse_mode: 'HTML',
             reply_markup: {
@@ -28,28 +29,29 @@ function greeting(ctx) {
                     [{ text: 'Предложения', callback_data: 'sentences' }],
                     [{ text: 'Переводчик', callback_data: 'translater' }],
                     [{ text: 'Модерация', callback_data: 'moderation' }],
-                    [{ text: "Личный кабинет", callback_data: "dashboard" }]
+                    [{ text: "🔐 Chat GPT", callback_data: "chatgpt" }],
+                    [{ text: "Личный кабинет", callback_data: "dashboard" }],
                 ]
             }
         };
         let message = `Самоучитель бурятского языка \n\nКаждое взаимодействие с ботом, \nвлияет на сохранение и дальнейшее развитие <b>Бурятского языка</b>`;
         message += '\n\nВыберите раздел, чтобы приступить';
         try {
-            ctx.updateType === 'message' ? yield ctx.reply(message, extra) : false;
-            ctx.updateType === 'callback_query' ? yield ctx.editMessageText(message, extra) : false;
+            // ctx.updateType === 'message' ? await ctx.reply(message, extra) : false
+            ctx.updateType === 'callback_query' ? yield ctx.editMessageText(message, extra) : ctx.reply(message, extra);
         }
         catch (err) {
-            console.error(err);
+            console.log(err);
         }
     });
 }
+exports.greeting = greeting;
 home.start((ctx) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     try {
         let document = yield IUser_1.User.findOne({
             id: (_a = ctx.from) === null || _a === void 0 ? void 0 : _a.id
         });
-        console.log(document);
         if (!document) {
             if (ctx.from) {
                 let user = {
@@ -63,7 +65,9 @@ home.start((ctx) => __awaiter(void 0, void 0, void 0, function* () {
                     proposedProposals: [],
                     supported: 0
                 };
-                yield new IUser_1.User(user).save();
+                yield new IUser_1.User(user).save().catch(err => {
+                    console.log(err);
+                });
                 yield greeting(ctx);
             }
         }
@@ -92,6 +96,10 @@ home.action("study", (ctx) => __awaiter(void 0, void 0, void 0, function* () {
 home.action("moderation", (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     ctx.answerCbQuery();
     return ctx.scene.enter('moderation');
+}));
+home.action("chatgpt", (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    ctx.answerCbQuery();
+    return ctx.scene.enter('chatgpt');
 }));
 home.action("dashboard", (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     yield ctx.answerCbQuery('Личный кабинет');
@@ -209,7 +217,10 @@ function add_sentences_handler(ctx) {
     });
 }
 exports.add_sentences_handler = add_sentences_handler;
-handler.on("message", (ctx) => __awaiter(void 0, void 0, void 0, function* () { return yield greeting(ctx); }));
-handler.action(/\./, (ctx) => __awaiter(void 0, void 0, void 0, function* () { return yield greeting(ctx); }));
+home.on("message", (ctx) => __awaiter(void 0, void 0, void 0, function* () { return yield greeting(ctx); }));
+home.action(/\./, (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(ctx);
+    yield greeting(ctx);
+}));
 exports.default = home;
 //# sourceMappingURL=home.scene.js.map

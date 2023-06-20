@@ -42,8 +42,65 @@ const greeting_1 = __importDefault(require("./moderationView/greeting"));
 // handlers and renders 
 const moderationTranslates_1 = __importStar(require("./moderationView/moderationTranslates"));
 const moderationSentencesHandler_1 = require("./moderationView/moderationSentencesHandler");
+const mongodb_1 = require("mongodb");
+const IReport_1 = require("../../models/IReport");
 const handler = new telegraf_1.Composer();
-const moderation = new telegraf_1.Scenes.WizardScene("moderation", handler, (ctx) => __awaiter(void 0, void 0, void 0, function* () { return moderation_sentences_handler(ctx); }), (ctx) => __awaiter(void 0, void 0, void 0, function* () { return moderation_translates_handler(ctx); }));
+const moderation = new telegraf_1.Scenes.WizardScene("moderation", handler, (ctx) => __awaiter(void 0, void 0, void 0, function* () { return moderation_sentences_handler(ctx); }), (ctx) => __awaiter(void 0, void 0, void 0, function* () { return moderation_translates_handler(ctx); }), (ctx) => __awaiter(void 0, void 0, void 0, function* () { return moderation_report_handler(ctx); }));
+function moderation_report_handler(ctx) {
+    var _a;
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            if (ctx.updateType === 'callback_query' || ctx.updateType === 'message') {
+                if (ctx.updateType === 'callback_query') {
+                    if (ctx.update.callback_query.data === 'continue' || ctx.update.callback_query.data === 'back') {
+                        yield (0, moderationTranslates_1.render_vote_sentence)(ctx);
+                    }
+                }
+                if (ctx.updateType === 'message') {
+                    // отправка жалобы в канал
+                    let senderReport = yield ctx.telegram.forwardMessage('-1001952917634', ctx.update.message.chat.id, ctx.message.message_id);
+                    let user = yield IUser_1.User.findOne({
+                        id: (_a = ctx.from) === null || _a === void 0 ? void 0 : _a.id
+                    });
+                    if (user) {
+                        let report = {
+                            // @ts-ignore
+                            user_id: user._id,
+                            translation_id: ctx.scene.session.current_translation_for_vote,
+                            message_id: senderReport.message_id
+                        };
+                        yield new IReport_1.ReportModel(report).save().then((report) => __awaiter(this, void 0, void 0, function* () {
+                            var _b;
+                            yield IUser_1.User.findOneAndUpdate({
+                                id: (_b = ctx.from) === null || _b === void 0 ? void 0 : _b.id
+                            }, {
+                                $push: {
+                                    reports: report._id
+                                }
+                            });
+                        }));
+                    }
+                    let message = `<b>Спасибо!</b> \nВаше сообщение принято на рассмотрение.`;
+                    yield ctx.reply(message, {
+                        parse_mode: 'HTML',
+                        reply_markup: {
+                            inline_keyboard: [
+                                [{ text: 'Вернуться к модерации', callback_data: 'continue' }]
+                            ]
+                        }
+                    });
+                }
+            }
+            else {
+                yield report_section_render(ctx);
+            }
+            ctx.answerCbQuery();
+        }
+        catch (err) {
+            console.error(err);
+        }
+    });
+}
 moderation.enter((ctx) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, greeting_1.default)(ctx); }));
 moderation.action("moderation_sentences", (ctx) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, moderationSentencesHandler_1.moderation_sentences)(ctx); }));
 function moderation_sentences_handler(ctx) {
@@ -63,6 +120,9 @@ function moderation_sentences_handler(ctx) {
                     yield (0, moderationSentencesHandler_1.updateSentence)(ctx, 'declined');
                 }
                 ctx.answerCbQuery();
+            }
+            else {
+                yield (0, moderationSentencesHandler_1.moderation_sentences)(ctx);
             }
         }
         catch (err) {
@@ -117,6 +177,51 @@ function moderation_translates_handler(ctx) {
 moderation.action("moderation_vocabular", (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     ctx.answerCbQuery('Модерация словаря в разработке');
 }));
+moderation.action("report", (ctx) => __awaiter(void 0, void 0, void 0, function* () { return yield report_section_render(ctx); }));
+function report_section_render(ctx) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            let message = '<b>Модерация / Голосование / Жалоба</b>\n\n';
+            let translation = yield ISentence_1.Translation.findOne({
+                // @ts-ignore
+                _id: ctx.scene.session.current_translation_for_vote
+            });
+            if (translation) {
+                let sentence_russian = yield ISentence_1.Sentence.findOne({
+                    _id: new mongodb_1.ObjectId(translation === null || translation === void 0 ? void 0 : translation.sentence_russian)
+                });
+                if (sentence_russian) {
+                    message += `Предложение\n\n`;
+                    message += `<code>${sentence_russian.text}</code>\n\n`;
+                }
+                message += `Перевод\n\n`;
+                message += `<code>${translation.translate_text}</code>`;
+                message += `\n\n<b>Отправьте следующим сообщением, причину жалобы</b>`;
+                let extra = {
+                    parse_mode: 'HTML',
+                    reply_markup: {
+                        inline_keyboard: [
+                            [{ text: 'Назад', callback_data: 'back' }]
+                        ]
+                    }
+                };
+                if (ctx.updateType === 'callback_query') {
+                    yield ctx.editMessageText(message, extra).then(() => {
+                        ctx.wizard.selectStep(3);
+                    });
+                }
+                else {
+                    yield ctx.reply(message, extra).then(() => {
+                        ctx.wizard.selectStep(3);
+                    });
+                }
+            }
+        }
+        catch (err) {
+            console.error(err);
+        }
+    });
+}
 handler.on("message", (ctx) => __awaiter(void 0, void 0, void 0, function* () { return yield (0, greeting_1.default)(ctx); }));
 handler.action("back", (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     yield ctx.answerCbQuery();

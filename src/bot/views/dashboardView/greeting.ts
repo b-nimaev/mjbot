@@ -7,10 +7,9 @@ export default async function greeting(ctx: rlhubContext) {
     try {
 
         if (ctx.from) {
-            console.log(await User.find())
-            let user: IUser | null = await User.findOne({ id: ctx.from.id })
-            console.log(user)
 
+            let user: IUser | null = await User.findOne({ id: ctx.from.id })
+            
             if (user) {
 
                 const extra: ExtraEditMessageText = {

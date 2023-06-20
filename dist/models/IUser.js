@@ -31,6 +31,8 @@ const userSchema = new mongoose_1.Schema({
     first_name: { type: String, required: false },
     last_name: { type: String, required: false },
     supported: { type: Number, required: true },
+    reports: { type: [mongoose_1.default.Schema.Types.ObjectId], required: false },
+    chats: { type: [mongoose_1.default.Schema.Types.ObjectId], required: false },
     translations: { type: [mongoose_1.default.Schema.Types.ObjectId], required: false, default: [] },
     voted_translations: { type: [mongoose_1.default.Schema.Types.ObjectId], required: false, default: [] },
     rating: { type: Number, required: true, default: 1 },

@@ -120,7 +120,7 @@ async function new_chat_handler(ctx: rlhubContext) {
                 }, {
                     $set: {
                         // @ts-ignore
-                        context: old?.context + '/n' + res.data.choices[0].message?.content.trim()
+                        context: old?.context + '/n/n' + res.data.choices[0].message?.content.trim() + '/n/n'
                     }
                 })
                 // @ts-ignore

@@ -27,7 +27,7 @@ function render_sft(ctx) {
     var _a, _b, _c, _d, _e, _f;
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            let message = `<b>Перевод предложений</b>\n\n`;
+            let message = ``;
             let extra = {
                 parse_mode: 'HTML',
                 reply_markup: {

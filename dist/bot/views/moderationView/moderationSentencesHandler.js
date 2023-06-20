@@ -66,63 +66,65 @@ exports.updateSentence = updateSentence;
 function moderation_sentences(ctx) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            let message = `<b>Модерация — Предложения</b>`;
-            if (ctx.updateType === 'callback_query') {
-                ISentence_1.Sentence.findOne({
-                    accepted: "not view"
-                }).then((document) => __awaiter(this, void 0, void 0, function* () {
-                    if (!document) {
-                        yield ctx.answerCbQuery('Предложений не найдено');
-                        ctx.wizard.selectStep(0);
-                        yield (0, greeting_1.default)(ctx).catch(() => { ctx.answerCbQuery('Предложений не найдено'); });
+            return yield ISentence_1.Sentence.findOne({ accepted: "not view" }).then((document) => __awaiter(this, void 0, void 0, function* () {
+                // Если предлождений для модерации нет
+                if (!document) {
+                    yield ctx.answerCbQuery('Предложений не найдено');
+                    ctx.wizard.selectStep(0);
+                    return yield (0, greeting_1.default)(ctx).catch(() => { ctx.answerCbQuery('Предложений не найдено'); });
+                }
+                else {
+                    // Если есть предложения для модерации сохраняем его в контекст
+                    if (document._id) {
+                        ctx.session.__scenes.moderation_sentence = document._id.toString();
                     }
-                    else {
-                        if (document._id) {
-                            ctx.session.__scenes.moderation_sentence = document._id.toString();
-                        }
-                        let message = `<b>Модерация</b> \n\n`;
-                        let extra = {
-                            parse_mode: 'HTML',
-                            reply_markup: {
-                                inline_keyboard: [
-                                    [
-                                        {
-                                            text: '👍',
-                                            callback_data: 'good'
-                                        },
-                                        {
-                                            text: '👎',
-                                            callback_data: 'bad'
-                                        }
-                                    ],
-                                    [
-                                        {
-                                            text: 'Назад',
-                                            callback_data: 'back'
-                                        }
-                                    ]
+                    // Инициализируем переменные
+                    let message = `<b>Модерация</b> \n\n`;
+                    let extra = {
+                        parse_mode: 'HTML',
+                        reply_markup: {
+                            inline_keyboard: [
+                                [
+                                    {
+                                        text: '👍',
+                                        callback_data: 'good'
+                                    },
+                                    {
+                                        text: '👎',
+                                        callback_data: 'bad'
+                                    }
+                                ],
+                                [
+                                    {
+                                        text: 'Назад',
+                                        callback_data: 'back'
+                                    }
                                 ]
-                            }
-                        };
-                        const options = {
-                            weekday: 'short',
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                            hour: 'numeric',
-                            minute: 'numeric',
-                            second: 'numeric', // секунды, например '33'
-                        };
-                        const formattedDate = document.createdAt.toLocaleDateString('ru-RU', options); // 'Пн, 21 апр. 2023'
-                        // const formattedTime = document.createdAt.toLocaleTimeString('ru-RU', options); // '17:14:33'
-                        message += `${document.text} \n`;
-                        message += `<pre>${formattedDate}</pre>`;
+                            ]
+                        }
+                    };
+                    const options = {
+                        weekday: 'short',
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                        hour: 'numeric',
+                        minute: 'numeric',
+                        second: 'numeric', // секунды, например '33'
+                    };
+                    const formattedDate = document.createdAt.toLocaleDateString('ru-RU', options); // 'Пн, 21 апр. 2023'
+                    message += `${document.text} \n\n`;
+                    message += `<pre>${formattedDate}</pre>`;
+                    if (ctx.updateType === 'callback_query') {
                         yield ctx.editMessageText(message, extra);
                         ctx.wizard.selectStep(1);
+                        ctx.answerCbQuery();
                     }
-                }));
-                ctx.answerCbQuery();
-            }
+                    else {
+                        yield ctx.reply(message, extra);
+                    }
+                }
+            }));
         }
         catch (err) {
             console.log(err);

@@ -17,7 +17,7 @@ const greeting_1 = __importDefault(require("./greeting"));
 const IPayment_1 = require("../../../models/IPayment");
 const QiwiBillPaymentsAPI = require('@qiwi/bill-payments-node-js-sdk');
 const secret_key = process.env.secret_key;
-const publicKey = process.env.public_key;
+// const publicKey: string | undefined = process.env.public_key;
 const qiwiApi = new QiwiBillPaymentsAPI(secret_key);
 function help_handler(ctx) {
     var _a;
@@ -122,7 +122,7 @@ function get_link_for_payment(ctx, amount, billID, expirationDateTime) {
                 expirationDateTime: expirationDateTime,
                 comment: 'На сохранение бурятского яызыка',
                 email: 'alexandrbnimaev@yandex.ru',
-                successUrl: `https://5491-95-188-237-196.ngrok-free.app/payment/success?billId=${billID}`
+                successUrl: `https://profori.pro/telegraf/secret_path/success?billId=${billID}`
             };
             let link = qiwiApi.createBill(billID, params);
             return link;

@@ -51,14 +51,28 @@ function render_vote_sentence(ctx) {
             }
             // текст
             let message = `<b>Модерация / Голосование</b>\n\n`;
-            message += `Предложение на русском языке <pre>${sentence_russian === null || sentence_russian === void 0 ? void 0 : sentence_russian.text}</pre> \n`;
+            message += `Предложение  \n\n<pre>${sentence_russian === null || sentence_russian === void 0 ? void 0 : sentence_russian.text}</pre>\n`;
             // message += `Количество переводов: ${sentence_russian?.translations.length}\n\n`
-            message += `Проголосуйте за следующий перевод \n`;
-            message += `<pre>${translation === null || translation === void 0 ? void 0 : translation.translate_text}</pre>`;
+            message += `\n\nПеревод \n\n`;
+            message += `<pre>${translation === null || translation === void 0 ? void 0 : translation.translate_text}</pre>\n\n`;
+            const options = {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric', // секунды, например '33'
+            };
+            if (sentence_russian) {
+                const formattedDate = sentence_russian.createdAt.toLocaleDateString('ru-RU', options); // 'Пн, 21 апр. 2023'
+                message += `<pre>${formattedDate}</pre>`;
+            }
             let statistic = {
                 plus: [],
                 minus: []
             };
+            console.log(sentence_russian);
             if (translation) {
                 if (translation.votes) {
                     if (translation.votes.length) {
@@ -88,6 +102,10 @@ function render_vote_sentence(ctx) {
                                 callback_data: 'good'
                             },
                             {
+                                text: `Не знаю`,
+                                callback_data: 'dontknow'
+                            },
+                            {
                                 text: `👎 ${statistic.minus.length}`,
                                 callback_data: 'bad'
                             }
@@ -100,8 +118,8 @@ function render_vote_sentence(ctx) {
                         ],
                         [
                             {
-                                text: 'Пропустить',
-                                callback_data: 'skip'
+                                text: 'Пожаловаться',
+                                callback_data: 'report'
                             }
                         ],
                         [

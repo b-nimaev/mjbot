@@ -21,6 +21,7 @@ interface translation {
     translate_text: string;
     author: number;
     votes?: ObjectId[];
+    rating?: number;
     skipped_by?: ObjectId[]
 }
 
@@ -29,6 +30,7 @@ const translationSchema: Schema<translation> = new mongoose.Schema({
     translate_text: { type: String, required: true },
     author: { type: Number, required: true },
     votes: {  type: [mongoose.Schema.Types.ObjectId], required: false },
+    rating: { type: Number, required: false },
     skipped_by: { type: [mongoose.Schema.Types.ObjectId], required: false }
 }, {
     timestamps: true
@@ -72,4 +74,4 @@ const Sentence = model<ISentence>("Sentence", new Schema({
     timestamps: true
 }));
 
-export { Sentence, Translation, ISentence, translation, active_translator, ActiveTranslator };
+export { Sentence, Translation, ISentence, translation, active_translator, ActiveTranslator, vote };

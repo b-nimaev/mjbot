@@ -20,8 +20,7 @@ export async function render_vote_sentence(ctx: rlhubContext) {
 
         // получаем перевод и предложение которое переведено
         let translation: translation = await Translation.aggregate([
-            { $addFields: { votesCount: { $size: "$votes" } } },
-            { $sort: { votesCount: 1 } },
+            { $sort: { rating: 1 } },
             { $limit: 1 }
         ]).then(async (response) => {
             return response[0]

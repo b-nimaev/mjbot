@@ -13,6 +13,7 @@ function greeting(ctx) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             let message = `<b>Модерация</b>\n\n`;
+            message += `Секция`;
             message += `Выберите раздел чтобы приступить`;
             const extra = {
                 parse_mode: 'HTML',
