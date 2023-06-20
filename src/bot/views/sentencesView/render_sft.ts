@@ -225,7 +225,8 @@ export async function add_translate_to_sentences_hander(ctx: rlhubContext) {
                     let translation: translation = {
                         sentence_russian: ctx.scene.session.sentence_id,
                         translate_text: text,
-                        author: user_id
+                        author: user_id,
+                        rating: 0
                     }
 
                     console.log(ctx.scene.session.active_translation)
