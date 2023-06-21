@@ -18,6 +18,7 @@ import moderation from './bot/views/moderation.scene';
 import chat from './bot/views/chat.scene';
 import { ExtraEditMessageText } from 'telegraf/typings/telegram-types';
 import { Translation, voteModel } from './models/ISentence';
+import { User } from './models/IUser';
 
 const stage: any = new Scenes.Stage<rlhubContext>([home, chat, vocabular, sentences, dashboard, moderation, settings], { default: 'home' });
 (async () => {
@@ -43,9 +44,20 @@ const stage: any = new Scenes.Stage<rlhubContext>([home, chat, vocabular, senten
 
     try {
 
+        let users = await User.find()
+        users.forEach(async (element) => {
+            if (element.id) {
+                try {
+                    await bot.telegram.sendMessage(`${element.id}`, message, extra)
+                } catch (err) {
+                    console.log(err)
+                }
+            }
+        });
+        
         // ctx.updateType === 'message' ? await ctx.reply(message, extra) : false
         // ctx.updateType === 'callback_query' ? await ctx.editMessageText(message, extra) : ctx.reply(message, extra)
-        bot.telegram.sendMessage(1272270574, message, extra)
+        // bot.telegram.sendMessage(1272270574, message, extra)
 
     } catch (err) {
 
@@ -73,9 +85,9 @@ settings.command('home', async (ctx: rlhubContext) => { await ctx.scene.enter('h
 
 bot.use(session())
 bot.use(stage.middleware())
-bot.start(async (ctx) => { 
-    await ctx.scene.enter('home') 
-    ctx.deleteMessage(874)
+bot.start(async (ctx) => {
+    await ctx.scene.enter('home')
+    // ctx.deleteMessage(874)
 })
 bot.command('update_translates_collection', async (ctx) => {
 
@@ -86,10 +98,10 @@ bot.command('update_translates_collection', async (ctx) => {
         let rating = 0
 
         if (votes) {
-            
+
             let pluses = 0
             let minuses = 0
-            
+
             for (let i = 0; i < votes.length; i++) {
 
                 let voteDocument = await voteModel.findById(votes[i])
@@ -103,7 +115,7 @@ bot.command('update_translates_collection', async (ctx) => {
                     }
 
                 }
-                
+
             }
 
             rating = pluses - minuses
@@ -111,11 +123,12 @@ bot.command('update_translates_collection', async (ctx) => {
 
         await Translation.findByIdAndUpdate(element._id, {
             $set: {
-                rating: rating 
+                rating: rating
             }
         })
     })
 
-})
+});
+
 bot.command('chat', async (ctx) => { await ctx.scene.enter('chatgpt') })
 bot.command('home', async (ctx) => { await ctx.scene.enter('home') })
