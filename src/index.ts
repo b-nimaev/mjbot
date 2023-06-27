@@ -21,50 +21,50 @@ import { Translation, voteModel } from './models/ISentence';
 import { User } from './models/IUser';
 
 const stage: any = new Scenes.Stage<rlhubContext>([home, chat, vocabular, sentences, dashboard, moderation, settings], { default: 'home' });
-(async () => {
-    const extra: ExtraEditMessageText = {
-        parse_mode: 'HTML',
-        reply_markup: {
-            inline_keyboard: [
-                [
-                    { text: "Самоучитель", callback_data: "study" },
-                    { text: "Словарь", callback_data: "vocabular" }
-                ],
-                [{ text: 'Предложения', callback_data: 'sentences' }],
-                [{ text: 'Переводчик', callback_data: 'translater' }],
-                [{ text: 'Модерация', callback_data: 'moderation' }],
-                [{ text: "🔐 Chat GPT", callback_data: "chatgpt" }],
-                [{ text: "Личный кабинет", callback_data: "dashboard" }]
-            ]
-        }
-    }
+// (async () => {
+//     const extra: ExtraEditMessageText = {
+//         parse_mode: 'HTML',
+//         reply_markup: {
+//             inline_keyboard: [
+//                 [
+//                     { text: "Самоучитель", callback_data: "study" },
+//                     { text: "Словарь", callback_data: "vocabular" }
+//                 ],
+//                 [{ text: 'Предложения', callback_data: 'sentences' }],
+//                 [{ text: 'Переводчик', callback_data: 'translater' }],
+//                 [{ text: 'Модерация', callback_data: 'moderation' }],
+//                 [{ text: "🔐 Chat GPT", callback_data: "chatgpt" }],
+//                 [{ text: "Личный кабинет", callback_data: "dashboard" }]
+//             ]
+//         }
+//     }
 
-    let message = `Самоучитель бурятского языка \n\nКаждое взаимодействие с ботом, \nвлияет на сохранение и дальнейшее развитие <b>Бурятского языка</b>`
-    message += '\n\nВыберите раздел, чтобы приступить'
+//     let message = `Самоучитель бурятского языка \n\nКаждое взаимодействие с ботом, \nвлияет на сохранение и дальнейшее развитие <b>Бурятского языка</b>`
+//     message += '\n\nВыберите раздел, чтобы приступить'
 
-    try {
+//     try {
 
-        let users = await User.find()
-        users.forEach(async (element) => {
-            if (element.id) {
-                try {
-                    await bot.telegram.sendMessage(`${element.id}`, message, extra)
-                } catch (err) {
-                    console.log(err)
-                }
-            }
-        });
+//         let users = await User.find()
+//         users.forEach(async (element) => {
+//             if (element.id) {
+//                 try {
+//                     await bot.telegram.sendMessage(`${element.id}`, message, extra)
+//                 } catch (err) {
+//                     console.log(err)
+//                 }
+//             }
+//         });
         
-        // ctx.updateType === 'message' ? await ctx.reply(message, extra) : false
-        // ctx.updateType === 'callback_query' ? await ctx.editMessageText(message, extra) : ctx.reply(message, extra)
-        // bot.telegram.sendMessage(1272270574, message, extra)
+//         // ctx.updateType === 'message' ? await ctx.reply(message, extra) : false
+//         // ctx.updateType === 'callback_query' ? await ctx.editMessageText(message, extra) : ctx.reply(message, extra)
+//         // bot.telegram.sendMessage(1272270574, message, extra)
 
-    } catch (err) {
+//     } catch (err) {
 
-        console.log(err)
+//         console.log(err)
 
-    }
-})();
+//     }
+// })();
 
 home.command('chat', async (ctx: rlhubContext) => { await ctx.scene.enter('chatgpt') })
 chat.command('chat', async (ctx: rlhubContext) => { await ctx.scene.enter('chatgpt') })
@@ -92,7 +92,7 @@ bot.start(async (ctx) => {
 bot.command('update_translates_collection', async (ctx) => {
 
     let translates = await Translation.find()
-    translates.forEach(async (element) => {
+    translates.forEach(async (element: any) => {
 
         let votes = element.votes
         let rating = 0
