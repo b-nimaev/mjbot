@@ -66,6 +66,17 @@ const stage: any = new Scenes.Stage<rlhubContext>([home, chat, vocabular, senten
 //     }
 // })();
 
+
+(async () => {
+    try {
+
+        bot.telegram.sendMessage(1272270574, 'бот запущен!')
+
+    } catch (err) {
+        console.error(err)
+    }
+})
+
 home.command('chat', async (ctx: rlhubContext) => { await ctx.scene.enter('chatgpt') })
 chat.command('chat', async (ctx: rlhubContext) => { await ctx.scene.enter('chatgpt') })
 vocabular.command('chat', async (ctx: rlhubContext) => { await ctx.scene.enter('chatgpt') })
