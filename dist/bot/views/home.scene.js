@@ -217,7 +217,7 @@ function add_sentences_handler(ctx) {
     });
 }
 exports.add_sentences_handler = add_sentences_handler;
-home.on("message", (ctx) => __awaiter(void 0, void 0, void 0, function* () { return yield greeting(ctx); }));
+// home.on("message", async (ctx) => await greeting (ctx))
 home.action(/\./, (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     console.log(ctx);
     yield greeting(ctx);

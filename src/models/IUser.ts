@@ -8,7 +8,8 @@ interface IUser extends User {
     supported: number;
     proposedProposals: string[];
     reports?: ObjectId[];
-    chats?: ObjectId[]
+    chats?: ObjectId[];
+    language?: string;
 }
 
 const userSchema: Schema<IUser> = new Schema<IUser>({
@@ -22,7 +23,8 @@ const userSchema: Schema<IUser> = new Schema<IUser>({
     translations: { type: [mongoose.Schema.Types.ObjectId], required: false, default: [] }, // добавлено поле "переводы"
     voted_translations: { type: [mongoose.Schema.Types.ObjectId], required: false, default: [] }, // добавлено поле "голосование за переводы"
     rating: { type: Number, required: true, default: 1 }, // добавлено поле "рейтинг",
-    proposedProposals: { type: [String], required: true, default: [] }
+    proposedProposals: { type: [String], required: true, default: [] },
+    language: { type: [String], required: false }
 }, {
     timestamps: true
 });
