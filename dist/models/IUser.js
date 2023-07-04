@@ -30,13 +30,15 @@ const userSchema = new mongoose_1.Schema({
     username: { type: String, required: false },
     first_name: { type: String, required: false },
     last_name: { type: String, required: false },
-    supported: { type: Number, required: true },
+    supported: { type: Number, required: false },
     reports: { type: [mongoose_1.default.Schema.Types.ObjectId], required: false },
     chats: { type: [mongoose_1.default.Schema.Types.ObjectId], required: false },
     translations: { type: [mongoose_1.default.Schema.Types.ObjectId], required: false, default: [] },
     voted_translations: { type: [mongoose_1.default.Schema.Types.ObjectId], required: false, default: [] },
-    rating: { type: Number, required: true, default: 1 },
-    proposedProposals: { type: [String], required: true, default: [] }
+    rating: { type: Number, required: false, default: 1 },
+    proposedProposals: { type: [String], required: false, default: [] },
+    language: { type: [String], required: false },
+    free_generations: { type: Number, required: false }
 }, {
     timestamps: true
 });

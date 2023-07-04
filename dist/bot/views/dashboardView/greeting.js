@@ -20,57 +20,59 @@ function greeting(ctx) {
             if (ctx.from) {
                 let user = yield IUser_1.User.findOne({ id: ctx.from.id });
                 if (user) {
-                    const extra = {
-                        parse_mode: 'HTML',
-                        reply_markup: {
-                            inline_keyboard: [
-                                [
-                                    {
-                                        text: 'О проекте',
-                                        callback_data: 'about'
-                                    }
-                                ], [
-                                    {
-                                        text: 'Поддержка проекта',
-                                        callback_data: 'help'
-                                    }
-                                ],
-                                [
-                                    {
-                                        text: 'Персональные данные',
-                                        callback_data: 'common_settings'
-                                    }
-                                ],
-                                [
-                                    {
-                                        text: 'Справочные материалы',
-                                        callback_data: 'reference_materials'
-                                    }
-                                ],
-                                [
-                                    {
-                                        text: 'Назад',
-                                        callback_data: 'home'
-                                    },
-                                    {
-                                        text: 'Обратная связь',
-                                        url: 'https://t.me/bur_live'
-                                    }
-                                ],
-                            ]
-                        }
-                    };
-                    let words = [];
-                    let message = `<b>Личный кабинет</b> \n\n`;
-                    message += `Общий рейтинг: ${user.rating} \n`;
-                    // message += `Добавлено слов: 0 \n`
-                    // message += `Слов на модерации: ${words.length} \n`
-                    message += `Предложено предложений для перевода: ${user.proposedProposals.length}\n`;
-                    message += `Количество переведенных предложений: 0 \n`;
-                    message += `Количество голосов за перевод: ${user.voted_translations.length}`;
-                    message += `\n\n<b>Внесено в проект ${(0, format_money_1.default)(user.supported)} ₽</b>`;
-                    ctx.updateType === 'message' ? yield ctx.reply(message, extra) : false;
-                    ctx.updateType === 'callback_query' ? yield ctx.editMessageText(message, extra) : false;
+                    if (user.proposedProposals && user.voted_translations) {
+                        const extra = {
+                            parse_mode: 'HTML',
+                            reply_markup: {
+                                inline_keyboard: [
+                                    [
+                                        {
+                                            text: 'О проекте',
+                                            callback_data: 'about'
+                                        }
+                                    ], [
+                                        {
+                                            text: 'Поддержка проекта',
+                                            callback_data: 'help'
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text: 'Персональные данные',
+                                            callback_data: 'common_settings'
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text: 'Справочные материалы',
+                                            callback_data: 'reference_materials'
+                                        }
+                                    ],
+                                    [
+                                        {
+                                            text: 'Назад',
+                                            callback_data: 'home'
+                                        },
+                                        {
+                                            text: 'Обратная связь',
+                                            url: 'https://t.me/bur_live'
+                                        }
+                                    ],
+                                ]
+                            }
+                        };
+                        let words = [];
+                        let message = `<b>Личный кабинет</b> \n\n`;
+                        message += `Общий рейтинг: ${user.rating} \n`;
+                        // message += `Добавлено слов: 0 \n`
+                        // message += `Слов на модерации: ${words.length} \n`
+                        message += `Предложено предложений для перевода: ${user.proposedProposals.length}\n`;
+                        message += `Количество переведенных предложений: 0 \n`;
+                        message += `Количество голосов за перевод: ${user.voted_translations.length}`;
+                        message += `\n\n<b>Внесено в проект ${(0, format_money_1.default)(user.supported)} ₽</b>`;
+                        ctx.updateType === 'message' ? yield ctx.reply(message, extra) : false;
+                        ctx.updateType === 'callback_query' ? yield ctx.editMessageText(message, extra) : false;
+                    }
                 }
                 else {
                     console.log('123');

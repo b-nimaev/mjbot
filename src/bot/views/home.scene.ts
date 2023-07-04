@@ -18,24 +18,22 @@ const home = new Scenes.WizardScene("home", handler,
 home.start(async (ctx: rlhubContext) => {
     try {
 
+        // ищем пользователя в бд
         let document: IUser | null = await User.findOne({
             id: ctx.from?.id
         })
 
+        // если его, нет, сто создаем
         if (!document) {
-
+            
             if (ctx.from) {
 
                 let user: IUser = {
                     id: ctx.from.id,
                     username: ctx.from.username,
                     first_name: ctx.from.first_name,
-                    translations: [],
-                    voted_translations: [],
-                    rating: 0,
                     is_bot: false,
-                    proposedProposals: [],
-                    supported: 0
+                    free_generations: 3
                 }
 
                 await new User(user).save().catch(err => {
@@ -47,6 +45,9 @@ home.start(async (ctx: rlhubContext) => {
             }
 
         } else {
+            
+            // иначе выдаем стартовое меню 
+
             ctx.wizard.selectStep(1)
             await greeting(ctx)
         }

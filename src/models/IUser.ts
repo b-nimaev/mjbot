@@ -2,14 +2,15 @@ import mongoose, { Schema, model, ObjectId } from "mongoose";
 import { User } from "telegraf/typings/core/types/typegram";
 
 interface IUser extends User {
-    translations: ObjectId[]; // добавлено поле "переводы"
-    voted_translations: ObjectId[]; // добавлено поле "голосование за переводы"
-    rating: number; // добавлено поле "рейтинг",
-    supported: number;
-    proposedProposals: string[];
+    translations?: ObjectId[]; // добавлено поле "переводы"
+    voted_translations?: ObjectId[]; // добавлено поле "голосование за переводы"
+    rating?: number; // добавлено поле "рейтинг",
+    supported?: number;
+    proposedProposals?: string[];
     reports?: ObjectId[];
     chats?: ObjectId[];
     language?: string;
+    free_generations?: number
 }
 
 const userSchema: Schema<IUser> = new Schema<IUser>({
@@ -17,14 +18,15 @@ const userSchema: Schema<IUser> = new Schema<IUser>({
     username: { type: String, required: false },
     first_name: { type: String, required: false },
     last_name: { type: String, required: false },
-    supported: { type: Number, required: true },
+    supported: { type: Number, required: false },
     reports: { type: [mongoose.Schema.Types.ObjectId], required: false },
     chats: { type: [mongoose.Schema.Types.ObjectId], required: false },
     translations: { type: [mongoose.Schema.Types.ObjectId], required: false, default: [] }, // добавлено поле "переводы"
     voted_translations: { type: [mongoose.Schema.Types.ObjectId], required: false, default: [] }, // добавлено поле "голосование за переводы"
-    rating: { type: Number, required: true, default: 1 }, // добавлено поле "рейтинг",
-    proposedProposals: { type: [String], required: true, default: [] },
-    language: { type: [String], required: false }
+    rating: { type: Number, required: false, default: 1 }, // добавлено поле "рейтинг",
+    proposedProposals: { type: [String], required: false, default: [] },
+    language: { type: [String], required: false },
+    free_generations: { type: Number, required: false }
 }, {
     timestamps: true
 });

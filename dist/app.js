@@ -39,9 +39,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.secretPath = void 0;
 const express_1 = __importDefault(require("express"));
 const body_parser_1 = __importDefault(require("body-parser"));
-const IUser_1 = require("./models/IUser");
-const IPayment_1 = require("./models/IPayment");
-const mongodb_1 = require("mongodb");
 const index_1 = require("./index");
 const cors_1 = __importDefault(require("cors"));
 const morgan = require("morgan");
@@ -57,54 +54,6 @@ console.log((_a = process.env.mode) === null || _a === void 0 ? void 0 : _a.repl
 console.log(((_b = process.env.mode) === null || _b === void 0 ? void 0 : _b.replace(/"/g, '')) === 'production');
 console.log(typeof ((_c = process.env.mode) === null || _c === void 0 ? void 0 : _c.replace(/"/g, '')));
 app.get("/", (req, res) => res.send("Бот запущен!"));
-app.get('/success', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        // Extract the billId from the request URL
-        let billId = res.req.url.replace('/success?billId=', '');
-        console.log(billId);
-        if (billId && (billId.indexOf('billId') == -1)) {
-            // Find the payment document using the billId
-            let payment = yield IPayment_1.Payment.findOne({
-                _id: new mongodb_1.ObjectId(billId)
-            });
-            if (payment) {
-                // Find the user document using the payment's user_id
-                let user = yield IUser_1.User.findOne({
-                    id: payment === null || payment === void 0 ? void 0 : payment.user_id
-                });
-                if (user && payment) {
-                    // Send a sticker and a message to the user using the Telegram bot
-                    yield index_1.bot.telegram.sendSticker(user === null || user === void 0 ? void 0 : user.id, 'CAACAgIAAxkBAAEIRdBkHZukHX1iJJVPMeQmZvfKXRgfDQACiRkAAkHrwEvwxgiNPD3Rai8E');
-                    yield index_1.bot.telegram.sendMessage(user === null || user === void 0 ? void 0 : user.id, 'Спасибо за внесенный платеж!', {
-                        reply_markup: {
-                            inline_keyboard: [
-                                [
-                                    {
-                                        text: 'Назад',
-                                        callback_data: 'back'
-                                    }
-                                ]
-                            ]
-                        }
-                    });
-                    // Update the user's 'supported' field by adding the payment amount
-                    yield IUser_1.User.findOneAndUpdate({
-                        id: user.id
-                    }, {
-                        $set: {
-                            supported: user.supported + payment.amount
-                        }
-                    });
-                }
-            }
-        }
-        // Redirect the user to 'https://t.me/burlive_bot'
-    }
-    catch (err) {
-        console.error(err);
-    }
-    res.redirect('https://t.me/burlang_bot');
-}));
 app.use(morgan("dev"));
 app.use((0, cors_1.default)());
 app.listen(PORT, () => {

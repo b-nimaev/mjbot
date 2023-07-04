@@ -39,20 +39,22 @@ export default async function my_sentences(ctx: rlhubContext) {
 
         if (user) {
 
-            let props: string[] = user.proposedProposals
+            let props: string[] | undefined = user.proposedProposals
 
-            for (let i = 0; i < props.length; i++) {
+            if (props) {
+                for (let i = 0; i < props.length; i++) {
 
-                let sentence: ISentence | null = await Sentence.findOne({ _id: new ObjectId(props[i]) })
-                if (sentence) {
-                    if (sentence.accepted === 'accepted') {
-                        props_obj.accepted.push(sentence)
-                    }
-                    if (sentence.accepted === 'declined') {
-                        props_obj.declined.push(sentence)
-                    }
-                    if (sentence.accepted === 'not view') {
-                        props_obj.not_view.push(sentence)
+                    let sentence: ISentence | null = await Sentence.findOne({ _id: new ObjectId(props[i]) })
+                    if (sentence) {
+                        if (sentence.accepted === 'accepted') {
+                            props_obj.accepted.push(sentence)
+                        }
+                        if (sentence.accepted === 'declined') {
+                            props_obj.declined.push(sentence)
+                        }
+                        if (sentence.accepted === 'not view') {
+                            props_obj.not_view.push(sentence)
+                        }
                     }
                 }
             }

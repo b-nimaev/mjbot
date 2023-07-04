@@ -26,67 +26,6 @@ console.log(typeof (process.env.mode?.replace(/"/g, '')))
 
 app.get("/", (req, res) => res.send("Бот запущен!"))
 
-app.get('/success', async (req, res) => {
-
-    try {
-        // Extract the billId from the request URL
-        let billId: string = res.req.url.replace('/success?billId=', '');
-
-        console.log(billId);
-
-        if (billId && (billId.indexOf('billId') == -1)) {
-
-            // Find the payment document using the billId
-            let payment: IPayment | null = await Payment.findOne({
-                _id: new ObjectId(billId)
-            });
-
-            if (payment) {
-                // Find the user document using the payment's user_id
-                let user: IUser | null = await User.findOne({
-                    id: payment?.user_id
-                });
-
-                if (user && payment) {
-                    // Send a sticker and a message to the user using the Telegram bot
-                    await bot.telegram.sendSticker(user?.id, 'CAACAgIAAxkBAAEIRdBkHZukHX1iJJVPMeQmZvfKXRgfDQACiRkAAkHrwEvwxgiNPD3Rai8E');
-                    await bot.telegram.sendMessage(user?.id, 'Спасибо за внесенный платеж!', {
-                        reply_markup: {
-                            inline_keyboard: [
-                                [
-                                    {
-                                        text: 'Назад',
-                                        callback_data: 'back'
-                                    }
-                                ]
-                            ]
-                        }
-                    });
-
-                    // Update the user's 'supported' field by adding the payment amount
-                    await User.findOneAndUpdate(
-                        {
-                            id: user.id
-                        },
-                        {
-                            $set: {
-                                supported: user.supported + payment.amount
-                            }
-                        }
-                    );
-                }
-            }
-
-        }
-
-        // Redirect the user to 'https://t.me/burlive_bot'
-    } catch (err) {
-        console.error(err)
-    }
-    res.redirect('https://t.me/burlang_bot');
-
-});
-
 app.use(morgan("dev"));
 app.use(cors());
 app.listen(PORT, () => {
